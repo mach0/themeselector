@@ -18,7 +18,7 @@ from PyQt4.QtGui import QIcon
 
 
 
-class LayerPresetDialogTest(unittest.TestCase):
+class SelectorDialogTest(unittest.TestCase):
     """Test rerources work."""
 
     def setUp(self):
@@ -31,12 +31,12 @@ class LayerPresetDialogTest(unittest.TestCase):
 
     def test_icon_png(self):
         """Test we can click OK."""
-        path = ':/plugins/LayerPreset/img/presetter.png'
+        path = ':/plugins/themeselector/img/presetter.png'
         icon = QIcon(path)
         self.assertFalse(icon.isNull())
 
 if __name__ == "__main__":
-    suite = unittest.makeSuite(LayerPresetResourcesTest)
+    suite = unittest.makeSuite(SelectorResourcesTest)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
 

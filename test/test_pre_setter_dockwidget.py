@@ -16,19 +16,19 @@ import unittest
 
 from PyQt4.QtGui import QDockWidget
 
-from pre_setter_dockwidget import LayerPresetDockWidget
+from selector_dockwidget import SelectorDockWidget
 
 from utilities import get_qgis_app
 
 QGIS_APP = get_qgis_app()
 
 
-class LayerPresetDockWidgetTest(unittest.TestCase):
+class SelectorDockWidgetTest(unittest.TestCase):
     """Test dockwidget works."""
 
     def setUp(self):
         """Runs before each test."""
-        self.dockwidget = LayerPresetDockWidget(None)
+        self.dockwidget = SelectorDockWidget(None)
 
     def tearDown(self):
         """Runs after each test."""
@@ -39,7 +39,7 @@ class LayerPresetDockWidgetTest(unittest.TestCase):
         pass
 
 if __name__ == "__main__":
-    suite = unittest.makeSuite(LayerPresetDialogTest)
+    suite = unittest.makeSuite(SelectorDialogTest)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
 

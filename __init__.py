@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- LayerPreset
+ ThemeSelector
                                  A QGIS plugin
  This plugin brings the layer preset settings directly to the desktop
                              -------------------
@@ -25,11 +25,11 @@
 
 # noinspection PyPep8Naming
 def classFactory(iface):  # pylint: disable=invalid-name
-    """Load LayerPreset class from file LayerPreset.
+    """Load Selector class from file selector.
 
     :param iface: A QGIS interface instance.
     :type iface: QgsInterface
     """
     #
-    from .selector import LayerPreset
-    return LayerPreset(iface)
+    from .selector import Selector
+    return Selector(iface)

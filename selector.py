@@ -43,12 +43,12 @@ from qgis.utils import iface
 from . import resources
 
 # Import the code for the DockWidget
-from .selector_dockwidget import LayerPresetDockWidget
+from .selector_dockwidget import SelectorDockWidget
 import os.path
 
 
 
-class LayerPreset:
+class Selector:
     """QGIS Plugin Implementation."""
 
     def __init__(self, iface):
@@ -101,7 +101,7 @@ class LayerPreset:
         :rtype: QString
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
-        return QCoreApplication.translate('LayerPreset', message)
+        return QCoreApplication.translate('Selector', message)
 
     def add_action(
         self,
@@ -214,7 +214,7 @@ class LayerPreset:
             #    removed on close (see self.onClosePlugin method)
             if self.dockwidget is None:
                 # Create the dockwidget (after translation) and keep reference
-                self.dockwidget = LayerPresetDockWidget()
+                self.dockwidget = SelectorDockWidget()
 
             # connect to provide cleanup on closing of dockwidget
             self.dockwidget.closingPlugin.connect(self.onClosePlugin)

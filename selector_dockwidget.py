@@ -40,13 +40,13 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'selector_dockwidget_base.ui'))
 
 
-class LayerPresetDockWidget(QDockWidget, FORM_CLASS):
+class SelectorDockWidget(QDockWidget, FORM_CLASS):
 
     closingPlugin = pyqtSignal()
 
     def __init__(self, parent=None):
         """Constructor."""
-        super(LayerPresetDockWidget, self).__init__(parent)
+        super(SelectorDockWidget, self).__init__(parent)
         self.populateDropDown()
 
         self.setupUi(self)

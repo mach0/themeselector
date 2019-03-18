@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# LayerPreset documentation build configuration file, created by
+# ThemeSelector documentation build configuration file, created by
 # sphinx-quickstart on Sun Feb 12 17:11:03 2012.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -40,7 +40,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'LayerPreset'
+project = u'ThemeSelector'
 copyright = u'2013, Werner Macho'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -178,7 +178,7 @@ htmlhelp_basename = 'TemplateClassdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'LayerPreset.tex', u'LayerPreset Documentation',
+  ('index', 'Selector.tex', u'ThemeSelector Documentation',
    u'Werner Macho', 'manual'),
 ]
 
@@ -211,6 +211,6 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'TemplateClass', u'LayerPreset Documentation',
+    ('index', 'TemplateClass', u'Selector Documentation',
      [u'Werner Macho'], 1)
 ]

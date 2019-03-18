@@ -10,10 +10,20 @@
     </message>
 </context>
 <context>
-    <name>LayerPreset</name>
+    <name>Selector</name>
     <message>
         <location filename="../selector.py" line="200"/>
         <source>Pre&amp;Setter</source>
+        <translation>Themenau&amp;swahl</translation>
+    </message>
+    <message>
+        <location filename="../selector.py" line="87"/>
+        <source>Themeselector</source>
+        <translation>Themenauswahl</translation>
+    </message>
+    <message>
+        <location filename="../selector.py" line="185"/>
+        <source>Theme&amp;Selector</source>
         <translation>Themenau&amp;swahl</translation>
     </message>
     <message>
@@ -32,14 +42,14 @@
         <translation>Thema Umbenennen</translation>
     </message>
     <message>
-        <location filename="../selector.py" line="323"/>
-        <source>Duplicate theme</source>
-        <translation>Thema Kopieren</translation>
-    </message>
-    <message>
         <location filename="../selector.py" line="300"/>
         <source>New Name:</source>
         <translation>Neuer Name:</translation>
+    </message>
+    <message>
+        <location filename="../selector.py" line="323"/>
+        <source>Duplicate theme</source>
+        <translation>Thema Kopieren</translation>
     </message>
     <message>
         <location filename="../selector.py" line="323"/>
@@ -49,24 +59,14 @@
     <message>
         <location filename="../selector.py" line="323"/>
         <source> to theme </source>
-        <translation> nach Thema:</translation>
-    </message>
-    <message>
-        <location filename="../selector.py" line="87"/>
-        <source>Themeselector</source>
-        <translation>Themeauswahl</translation>
-    </message>
-    <message>
-        <location filename="../selector.py" line="185"/>
-        <source>Theme&amp;Selector</source>
-        <translation>Themenau&amp;swahl</translation>
+        <translation> nach Thema </translation>
     </message>
 </context>
 <context>
-    <name>LayerPresetDockWidgetBase</name>
+    <name>SelectorDockWidgetBase</name>
     <message>
         <location filename="../selector_dockwidget_base.ui" line="14"/>
-        <source>PreSetter</source>
+        <source>ThemeSelector</source>
         <translation>Themenauswahl</translation>
     </message>
     <message>
@@ -75,24 +75,24 @@
         <translation>Ersetzen</translation>
     </message>
     <message>
-        <location filename="../selector_dockwidget_base.ui" line="38"/>
-        <source>Add</source>
-        <translation>Hinzufügen</translation>
-    </message>
-    <message>
-        <location filename="../selector_dockwidget_base.ui" line="52"/>
-        <source>Remove</source>
-        <translation>Entfernen</translation>
-    </message>
-    <message>
         <location filename="../selector_dockwidget_base.ui" line="28"/>
         <source>Theme:</source>
         <translation>Thema:</translation>
     </message>
     <message>
+        <location filename="../selector_dockwidget_base.ui" line="38"/>
+        <source>Add</source>
+        <translation>Hinzufügen</translation>
+    </message>
+    <message>
         <location filename="../selector_dockwidget_base.ui" line="45"/>
         <source>Rename</source>
         <translation>Umbenennen</translation>
+    </message>
+    <message>
+        <location filename="../selector_dockwidget_base.ui" line="52"/>
+        <source>Remove</source>
+        <translation>Entfernen</translation>
     </message>
     <message>
         <location filename="../selector_dockwidget_base.ui" line="65"/>

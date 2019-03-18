@@ -9,10 +9,20 @@
     </message>
 </context>
 <context>
-    <name>LayerPreset</name>
+    <name>Selector</name>
     <message>
         <location filename="../selector.py" line="200"/>
         <source>Pre&amp;Setter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../selector.py" line="87"/>
+        <source>Themeselector</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../selector.py" line="185"/>
+        <source>Theme&amp;Selector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -31,13 +41,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../selector.py" line="323"/>
-        <source>Duplicate theme</source>
+        <location filename="../selector.py" line="300"/>
+        <source>New Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../selector.py" line="300"/>
-        <source>New Name:</source>
+        <location filename="../selector.py" line="323"/>
+        <source>Duplicate theme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -50,22 +60,12 @@
         <source> to theme </source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="../selector.py" line="87"/>
-        <source>Themeselector</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../selector.py" line="185"/>
-        <source>Theme&amp;Selector</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
-    <name>LayerPresetDockWidgetBase</name>
+    <name>SelectorDockWidgetBase</name>
     <message>
         <location filename="../selector_dockwidget_base.ui" line="14"/>
-        <source>PreSetter</source>
+        <source>ThemeSelector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -74,23 +74,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../selector_dockwidget_base.ui" line="38"/>
-        <source>Add</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../selector_dockwidget_base.ui" line="52"/>
-        <source>Remove</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../selector_dockwidget_base.ui" line="28"/>
         <source>Theme:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../selector_dockwidget_base.ui" line="38"/>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../selector_dockwidget_base.ui" line="45"/>
         <source>Rename</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../selector_dockwidget_base.ui" line="52"/>
+        <source>Remove</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
