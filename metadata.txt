@@ -1,0 +1,30 @@
+[general]
+name=ThemeSelector
+name[de]=Themenauswahl
+qgisMinimumVersion=2.99
+qgisMaximumVersion=3.98
+description=This plugin brings the layer theme settings directly to the desktop
+description[de]=Dieses Plugin bringt die Themenauswahl und Verwaltung direkt auf den Desktop
+about=Take saved themes and apply them with a selection by dropdown.
+about[de]=Das Plugin stellt im Projekt gespeicherte Themen über ein Dropdown-Fenster zur Verfügung.
+
+category=Plugins
+version=0.5
+author=Werner Macho für Wagner-IT
+email=werner.macho@gmail.com
+
+; optional metadata entries
+changelog=
+    0.5 added more functions
+    0.4 close to public release
+    0.3 fix translation
+    0.1 initial version
+
+tags=layer, preset, settings, options, theme, select, 
+homepage=https://github.com/mach0/themeselector
+tracker=https://github.com/mach0/themeselector/issues
+repository=https://github.com/mach0/themeselector
+icon=img/selector.png
+experimental=True
+deprecated=False
+

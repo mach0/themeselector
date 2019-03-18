@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/plugins/themeselector">
+        <file>img/selector.png</file>
+        <file>img/selector.svg</file>
+    </qresource>
+</RCC>
