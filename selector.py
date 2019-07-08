@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- PreSetter
+ ThemeSelector
                                  A QGIS plugin
  This plugin brings the layer preset settings directly to the desktop
                               -------------------
@@ -45,7 +45,6 @@ from . import resources
 # Import the code for the DockWidget
 from .selector_dockwidget import SelectorDockWidget
 import os.path
-
 
 
 class Selector:
@@ -279,7 +278,10 @@ class Selector:
         QgsProject.instance().mapThemeCollection().update(theme, rec)
 
     def add_maptheme(self):
-        quest = QInputDialog.getText(None, self.tr(u'Themename'), self.tr(u'Name of the new theme'))
+        quest = QInputDialog.getText(None,
+                                     self.tr(u'Themename'),
+                                     self.tr(u'Name of the new theme')
+                                     )
         root = QgsProject.instance().layerTreeRoot()
         model = iface.layerTreeView().layerTreeModel()
         name, ok = quest
@@ -297,7 +299,12 @@ class Selector:
 
     def rename_maptheme(self):
         theme = self.dockwidget.PresetComboBox.currentText()
-        quest = QInputDialog.getText(None, self.tr(u'Rename Theme'), self.tr(u'New Name:'), 0, theme)
+        quest = QInputDialog.getText(None,
+                                     self.tr(u'Rename Theme'),
+                                     self.tr(u'New Name:'),
+                                     0,
+                                     theme
+                                     )
         root = QgsProject.instance().layerTreeRoot()
         model = iface.layerTreeView().layerTreeModel()
         name, ok = quest
@@ -324,7 +331,8 @@ class Selector:
                                      self.tr(u'Duplicate theme'),
                                      self.tr(u'Copy theme ')+theme+self.tr(u' to theme '),
                                      0,
-                                     theme)
+                                     theme
+                                     )
         root = QgsProject.instance().layerTreeRoot()
         model = iface.layerTreeView().layerTreeModel()
         name, ok = quest
