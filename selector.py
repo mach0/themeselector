@@ -3,7 +3,7 @@
 /***************************************************************************
  ThemeSelector
                                  A QGIS plugin
- This plugin brings the layer preset settings directly to the desktop
+ This plugin brings the layer theme settings directly to the desktop
                               -------------------
         begin                : 2017-07-13
         git sha              : $Format:%H$
@@ -80,7 +80,7 @@ class Selector:
 
         # Declare instance attributes
         self.actions = []
-        self.menu = self.tr(u'Pre&Setter')
+        self.menu = self.tr(u'Theme&Selector')
 
         self.toolbar = self.iface.addToolBar(self.tr(u'Themeselector'))
         self.toolbar.setObjectName(self.tr(u'Themeselector'))
@@ -197,7 +197,7 @@ class Selector:
 
         for action in self.actions:
             self.iface.removePluginMenu(
-                self.tr(u'Pre&Setter'),
+                self.tr(u'Theme&Selector'),
                 action)
             self.iface.removeToolBarIcon(action)
         del self.toolbar
@@ -225,11 +225,11 @@ class Selector:
 
             self.populate()
             # TODO load and display correct theme on opening
-            # QgsProject.instance().mapThemeCollection().mapThemesChanged.connect(self.theme_changed)
-            # QgsProject.instance().visibilityPresetCollection().presetsChanged.connect(self.populate)
-            # QgsProject.instance().projectSaved.connect(self.clear)
             QgsProject.instance().cleared.connect(self.clear)
             QgsProject.instance().readProject.connect(self.populate)
+
+            #QgsProject.instance().mapThemeCollection().mapThemesChanged.connect(self.populate)
+
             self.dockwidget.PresetComboBox.currentIndexChanged.connect(self.theme_changed)
             self.dockwidget.pushButton_replace.clicked.connect(self.replace_maptheme)
             self.dockwidget.pushButton_add.clicked.connect(self.add_maptheme)
@@ -244,8 +244,8 @@ class Selector:
 
     def populate(self):
         self.clear()
-        preset = self.dockwidget.populateDropDown()
-        for setting in preset:
+        themecount = self.dockwidget.populateDropDown()
+        for setting in themecount:
             self.dockwidget.PresetComboBox.addItem(setting)
         self.dockwidget.pushButton_add.setEnabled(True)
         self.dockwidget.pushButton_remove.setEnabled(True)

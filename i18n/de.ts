@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="de_DE">
+<!DOCTYPE TS><TS version="2.0" language="de_DE" sourcelanguage="">
 <context>
     <name>@default</name>
     <message>
@@ -12,52 +11,47 @@
 <context>
     <name>Selector</name>
     <message>
-        <location filename="../selector.py" line="200"/>
-        <source>Pre&amp;Setter</source>
-        <translation>Themenau&amp;swahl</translation>
-    </message>
-    <message>
-        <location filename="../selector.py" line="87"/>
+        <location filename="../selector.py" line="86"/>
         <source>Themeselector</source>
         <translation>Themenauswahl</translation>
     </message>
     <message>
-        <location filename="../selector.py" line="185"/>
+        <location filename="../selector.py" line="199"/>
         <source>Theme&amp;Selector</source>
         <translation>Themenau&amp;swahl</translation>
     </message>
     <message>
-        <location filename="../selector.py" line="282"/>
+        <location filename="../selector.py" line="278"/>
         <source>Themename</source>
         <translation>Themenname</translation>
     </message>
     <message>
-        <location filename="../selector.py" line="282"/>
+        <location filename="../selector.py" line="278"/>
         <source>Name of the new theme</source>
         <translation>Name des neuen Themas</translation>
     </message>
     <message>
-        <location filename="../selector.py" line="300"/>
+        <location filename="../selector.py" line="299"/>
         <source>Rename Theme</source>
         <translation>Thema Umbenennen</translation>
     </message>
     <message>
-        <location filename="../selector.py" line="300"/>
+        <location filename="../selector.py" line="299"/>
         <source>New Name:</source>
         <translation>Neuer Name:</translation>
     </message>
     <message>
-        <location filename="../selector.py" line="323"/>
+        <location filename="../selector.py" line="327"/>
         <source>Duplicate theme</source>
         <translation>Thema Kopieren</translation>
     </message>
     <message>
-        <location filename="../selector.py" line="323"/>
+        <location filename="../selector.py" line="327"/>
         <source>Copy theme </source>
         <translation>Kopiere Thema </translation>
     </message>
     <message>
-        <location filename="../selector.py" line="323"/>
+        <location filename="../selector.py" line="327"/>
         <source> to theme </source>
         <translation> nach Thema </translation>
     </message>

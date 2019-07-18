@@ -14,12 +14,11 @@ __copyright__ = 'Copyright 2017, Werner Macho'
 
 import unittest
 
-from PyQt4.QtGui import QIcon
-
+from PyQt.QtGui import QIcon
 
 
 class SelectorDialogTest(unittest.TestCase):
-    """Test rerources work."""
+    """Test resources work."""
 
     def setUp(self):
         """Runs before each test."""
@@ -31,7 +30,7 @@ class SelectorDialogTest(unittest.TestCase):
 
     def test_icon_png(self):
         """Test we can click OK."""
-        path = ':/plugins/themeselector/img/presetter.png'
+        path = ':/plugins/themeselector/img/selector.png'
         icon = QIcon(path)
         self.assertFalse(icon.isNull())
 

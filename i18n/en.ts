@@ -11,52 +11,47 @@
 <context>
     <name>Selector</name>
     <message>
-        <location filename="../selector.py" line="200"/>
-        <source>Pre&amp;Setter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../selector.py" line="87"/>
+        <location filename="../selector.py" line="86"/>
         <source>Themeselector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../selector.py" line="185"/>
+        <location filename="../selector.py" line="199"/>
         <source>Theme&amp;Selector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../selector.py" line="282"/>
+        <location filename="../selector.py" line="278"/>
         <source>Themename</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../selector.py" line="282"/>
+        <location filename="../selector.py" line="278"/>
         <source>Name of the new theme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../selector.py" line="300"/>
+        <location filename="../selector.py" line="299"/>
         <source>Rename Theme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../selector.py" line="300"/>
+        <location filename="../selector.py" line="299"/>
         <source>New Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../selector.py" line="323"/>
+        <location filename="../selector.py" line="327"/>
         <source>Duplicate theme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../selector.py" line="323"/>
+        <location filename="../selector.py" line="327"/>
         <source>Copy theme </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../selector.py" line="323"/>
+        <location filename="../selector.py" line="327"/>
         <source> to theme </source>
         <translation type="unfinished"></translation>
     </message>

@@ -3,7 +3,7 @@
 /***************************************************************************
  ThemeSelector
                                  A QGIS plugin
- This plugin brings the layer preset settings directly to the desktop
+ This plugin brings the layer theme settings directly to the desktop
                              -------------------
         begin                : 2017-07-13
         copyright            : (C) 2017 by Werner Macho
