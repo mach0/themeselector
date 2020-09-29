@@ -153,7 +153,7 @@ class Selector:
         """
 
         icon = QIcon(icon_path)
-        action = QAction(icon, "Themeselector", parent)
+        action = QAction(icon, text, parent)
         action.triggered.connect(callback)
         action.setEnabled(enabled_flag)
 
