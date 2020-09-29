@@ -40,9 +40,6 @@ from qgis.core import (
 )
 from qgis.utils import iface
 
-# Initialize Qt resources from file resources.py
-from . import resources
-
 # Import the code for the DockWidget
 from .selector_dockwidget import SelectorDockWidget
 import os.path
