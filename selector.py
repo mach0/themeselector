@@ -25,6 +25,7 @@ from qgis.PyQt.QtCore import (
     QTranslator,
     qVersion,
     QCoreApplication,
+    QFileInfo,
     Qt
 )
 from qgis.PyQt.QtGui import (
@@ -155,7 +156,7 @@ class Selector:
         """
 
         icon = QIcon(icon_path)
-        action = QAction(icon, text, parent)
+        action = QAction(icon, "Themeselector", parent)
         action.triggered.connect(callback)
         action.setEnabled(enabled_flag)
 
@@ -179,8 +180,7 @@ class Selector:
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
-
-        icon_path = ':/plugins/themeselector/img/selector.svg'
+        icon_path = QFileInfo(__file__).absolutePath() + '/img/selector.svg' 
         self.add_action(
             icon_path,
             text=self.tr(u'Theme&Selector'),
