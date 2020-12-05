@@ -154,8 +154,10 @@ class Selector:
 
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
-        action.triggered.connect(callback)
+        action.setCheckable(True)
+        action.toggled.connect(callback)
         action.setEnabled(enabled_flag)
+        action.setChecked(False)
 
         if status_tip is not None:
             action.setStatusTip(status_tip)
@@ -177,16 +179,18 @@ class Selector:
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
-        icon_path = QFileInfo(__file__).absolutePath() + '/img/selector.svg' 
+        icon_path = QFileInfo(__file__).absolutePath() + '/img/selector.svg'
         self.add_action(
             icon_path,
             text=self.tr(u'Theme&Selector'),
             callback=self.run,
-            parent=self.iface.mainWindow())
+            parent=self.iface.mainWindow()
+        )
 
     def onClosePlugin(self):
         """Cleanup necessary items here when plugin dockwidget is closed"""
         self.dockwidget.closingPlugin.disconnect(self.onClosePlugin)
+        # TODO: toggle button in toolbar when dockwidget closed
         self.pluginIsActive = False
 
     def unload(self):
@@ -202,6 +206,7 @@ class Selector:
     def run(self):
         """Run method that loads and starts the plugin"""
         # TODO: Check if there is a loaded project - if not deactivate buttons
+
         if not self.pluginIsActive:
             self.pluginIsActive = True
 
@@ -233,6 +238,9 @@ class Selector:
             self.dockwidget.pushButton_remove.clicked.connect(self.remove_maptheme)
             self.dockwidget.pushButton_rename.clicked.connect(self.rename_maptheme)
             self.dockwidget.pushButton_duplicate.clicked.connect(self.duplicate_maptheme)
+        else:
+            self.pluginIsActive = False
+            self.dockwidget.close()
 
     def clear(self):
         self.dockwidget.PresetComboBox.clear()
