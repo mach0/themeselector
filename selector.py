@@ -29,7 +29,7 @@ from qgis.PyQt.QtCore import (
     Qt
 )
 from qgis.PyQt.QtGui import (
-    QIcon,
+    QIcon
 )
 from qgis.PyQt.QtWidgets import (
     QAction,
@@ -99,7 +99,7 @@ class Selector:
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('Selector', message)
-
+    
     def add_action(
         self,
         icon_path,
@@ -231,13 +231,23 @@ class Selector:
             QgsProject.instance().readProject.connect(self.populate)
 
             #QgsProject.instance().mapThemeCollection().mapThemesChanged.connect(self.populate)
-
             self.dockwidget.PresetComboBox.currentIndexChanged.connect(self.theme_changed)
             self.dockwidget.pushButton_replace.clicked.connect(self.replace_maptheme)
             self.dockwidget.pushButton_add.clicked.connect(self.add_maptheme)
             self.dockwidget.pushButton_remove.clicked.connect(self.remove_maptheme)
             self.dockwidget.pushButton_rename.clicked.connect(self.rename_maptheme)
             self.dockwidget.pushButton_duplicate.clicked.connect(self.duplicate_maptheme)
+            icon_up_path = QFileInfo(__file__).absolutePath() + '/img/mActionArrowUp.svg'
+            icon_up = QIcon(icon_up_path)
+            self.dockwidget.pushButton_up.setIcon(icon_up)
+            icon_down_path = QFileInfo(__file__).absolutePath() + '/img/mActionArrowDown.svg'
+            icon_down = QIcon(icon_down_path)
+            self.dockwidget.pushButton_down.setIcon(icon_down)
+            #self.dockwidget.pushButton_up.setVisible(False)
+            #self.dockwidget.pushButton_up.setEnabled(True)
+            self.dockwidget.pushButton_up.clicked.connect(self.theme_up)
+            self.dockwidget.pushButton_down.clicked.connect(self.theme_down)
+
         else:
             self.pluginIsActive = False
             self.dockwidget.close()
@@ -254,6 +264,23 @@ class Selector:
             self.dockwidget.PresetComboBox.addItem(setting)
         self.dockwidget.pushButton_add.setEnabled(True)
         self.dockwidget.pushButton_remove.setEnabled(True)
+
+    def theme_down(self):
+        max = len(self.dockwidget.populateDropDown())
+        theme = self.dockwidget.PresetComboBox.currentText()
+        index = self.dockwidget.PresetComboBox.findText(theme, Qt.MatchFixedString)
+        if index < max-1:
+            index = index + 1
+            self.dockwidget.PresetComboBox.setCurrentIndex(index)
+            self.theme_changed()
+
+    def theme_up(self):
+        theme = self.dockwidget.PresetComboBox.currentText()
+        index = self.dockwidget.PresetComboBox.findText(theme, Qt.MatchFixedString)
+        if index > 0:
+            index = index - 1
+            self.dockwidget.PresetComboBox.setCurrentIndex(index)
+            self.theme_changed()
 
     def set_combo_text(self, name):
         # set Combobox to newly created Theme
@@ -299,8 +326,6 @@ class Selector:
             )
             self.set_combo_text(name)
             return
-        else:
-            return
 
     def rename_maptheme(self):
         theme = self.dockwidget.PresetComboBox.currentText()
@@ -327,8 +352,7 @@ class Selector:
             self.theme_changed()
             self.set_combo_text(name)
             return
-        else:
-            return
+
 
     def duplicate_maptheme(self):
         theme = self.dockwidget.PresetComboBox.currentText()
@@ -347,6 +371,4 @@ class Selector:
             self.set_combo_text(name)
             self.populate()
             self.theme_changed()
-            return
-        else:
             return
