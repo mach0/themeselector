@@ -265,14 +265,18 @@ class Selector:
 
         self.dockwidget.pushButton_add.setEnabled(True)
         self.dockwidget.pushButton_remove.setEnabled(True)
+        theme = self.get_current_theme()
+        print("help")
     
-    def set_current_theme(self):
+    def get_current_theme(self):
+        ProjectInstance = QgsProject.instance()
+        mTC = ProjectInstance.mapThemeCollection()
         themes = self.dockwidget.getAvailableThemes()
-        root = QgsProject.instance().layerTreeRoot()
+        root = ProjectInstance.layerTreeRoot()
         model = iface.layerTreeView().layerTreeModel()
-        currentTheme = QgsProject.instance().mapThemeCollection().createThemeFromCurrentState( root, model )
+        currentTheme = mTC.createThemeFromCurrentState( root, model )
         for theme in themes:
-            if QgsProject.instance().mapThemeCollection(theme) == currentTheme:
+            if mTC.mapThemeState(theme) == currentTheme:
                 return theme
 
 

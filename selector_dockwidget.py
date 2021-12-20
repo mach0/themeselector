@@ -47,8 +47,6 @@ class SelectorDockWidget(QDockWidget, FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""
         super(SelectorDockWidget, self).__init__(parent)
-        #self.getAvailableThemes()
-
         self.setupUi(self)
 
     def closeEvent(self, event):
