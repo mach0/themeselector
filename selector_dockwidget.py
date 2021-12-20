@@ -47,7 +47,7 @@ class SelectorDockWidget(QDockWidget, FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""
         super(SelectorDockWidget, self).__init__(parent)
-        self.populateDropDown()
+        #self.getAvailableThemes()
 
         self.setupUi(self)
 
@@ -55,7 +55,7 @@ class SelectorDockWidget(QDockWidget, FORM_CLASS):
         self.closingPlugin.emit()
         event.accept()
 
-    def populateDropDown(self):
+    def getAvailableThemes(self):
         prj = QgsProject.instance()
-        preset = prj.mapThemeCollection().mapThemes()
-        return preset
+        themes = prj.mapThemeCollection().mapThemes()
+        return themes
