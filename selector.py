@@ -259,14 +259,25 @@ class Selector:
 
     def populate(self):
         self.clear()
-        themecount = self.dockwidget.populateDropDown()
-        for setting in themecount:
+        themes = self.dockwidget.getAvailableThemes()
+        for setting in themes:
             self.dockwidget.PresetComboBox.addItem(setting)
+
         self.dockwidget.pushButton_add.setEnabled(True)
         self.dockwidget.pushButton_remove.setEnabled(True)
+    
+    def set_current_theme(self):
+        themes = self.dockwidget.getAvailableThemes()
+        root = QgsProject.instance().layerTreeRoot()
+        model = iface.layerTreeView().layerTreeModel()
+        currentTheme = QgsProject.instance().mapThemeCollection().createThemeFromCurrentState( root, model )
+        for theme in themes:
+            if QgsProject.instance().mapThemeCollection(theme) == currentTheme:
+                return theme
+
 
     def theme_down(self):
-        max = len(self.dockwidget.populateDropDown())
+        max = len(self.dockwidget.getAvailableThemes())
         theme = self.dockwidget.PresetComboBox.currentText()
         index = self.dockwidget.PresetComboBox.findText(theme, Qt.MatchFixedString)
         if index < max-1:
@@ -292,6 +303,7 @@ class Selector:
         theme = self.dockwidget.PresetComboBox.currentText()
         root = QgsProject.instance().layerTreeRoot()
         model = iface.layerTreeView().layerTreeModel()
+        
         QgsProject.instance().mapThemeCollection().applyTheme(
             theme, root, model
         )
