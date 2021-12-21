@@ -38,6 +38,9 @@ from qgis.PyQt.QtWidgets import (
 from qgis.core import (
     QgsProject
 )
+from qgis.gui import (
+    QgsMapCanvas
+)
 from qgis.utils import iface
 
 # Import the code for the DockWidget
@@ -206,46 +209,37 @@ class Selector:
     def run(self):
         """Run method that loads and starts the plugin"""
         # TODO: Check if there is a loaded project - if not deactivate buttons
-
         if not self.pluginIsActive:
             self.pluginIsActive = True
-
             # dockwidget may not exist if:
             #    first run of plugin
             #    removed on close (see self.onClosePlugin method)
             if self.dockwidget is None:
                 # Create the dockwidget (after translation) and keep reference
                 self.dockwidget = SelectorDockWidget()
-
             # connect to provide cleanup on closing of dockwidget
             self.dockwidget.closingPlugin.connect(self.onClosePlugin)
-
-            # show the dockwidget
-            # TODO: fix to allow choice of dock location
             self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dockwidget)
             self.dockwidget.show()
 
             self.populate()
-            # TODO load and display correct theme on opening
             QgsProject.instance().cleared.connect(self.clear)
             QgsProject.instance().readProject.connect(self.populate)
-
-            #QgsProject.instance().mapThemeCollection.projectChanged(self.populate)
+            # connect QGIS layertool to themeselector
+            self.iface.mapCanvas().layersChanged.connect(self.set_combo_theme)
             self.dockwidget.PresetComboBox.currentIndexChanged.connect(self.theme_changed)
-            self.dockwidget.pushButton_replace.clicked.connect(self.replace_maptheme)
             self.dockwidget.pushButton_add.clicked.connect(self.add_maptheme)
             self.dockwidget.pushButton_remove.clicked.connect(self.remove_maptheme)
             self.dockwidget.pushButton_rename.clicked.connect(self.rename_maptheme)
             self.dockwidget.pushButton_duplicate.clicked.connect(self.duplicate_maptheme)
-            icon_up_path = QFileInfo(__file__).absolutePath() + '/img/mActionArrowUp.svg'
+            icon_up_path = QFileInfo(__file__).absolutePath() + '/img/mActionArrowLeft.svg'
             icon_up = QIcon(icon_up_path)
             self.dockwidget.pushButton_up.setIcon(icon_up)
-            icon_down_path = QFileInfo(__file__).absolutePath() + '/img/mActionArrowDown.svg'
+            icon_down_path = QFileInfo(__file__).absolutePath() + '/img/mActionArrowRight.svg'
             icon_down = QIcon(icon_down_path)
             self.dockwidget.pushButton_down.setIcon(icon_down)
             self.dockwidget.pushButton_up.clicked.connect(self.theme_up)
             self.dockwidget.pushButton_down.clicked.connect(self.theme_down)
-
         else:
             self.pluginIsActive = False
             self.dockwidget.close()
@@ -260,9 +254,7 @@ class Selector:
         themes = self.dockwidget.getAvailableThemes()
         for setting in themes:
             self.dockwidget.PresetComboBox.addItem(setting)
-        theme = self.get_current_theme()
-        index = self.dockwidget.PresetComboBox.findText(theme, Qt.MatchFixedString)
-        self.dockwidget.PresetComboBox.setCurrentIndex(index)
+        self.set_combo_theme()
         self.dockwidget.pushButton_add.setEnabled(True)
         self.dockwidget.pushButton_remove.setEnabled(True)
     
@@ -277,6 +269,10 @@ class Selector:
             if mTC.mapThemeState(theme) == currentTheme:
                 return theme
 
+    def set_combo_theme(self):
+        theme = self.get_current_theme()
+        index = self.dockwidget.PresetComboBox.findText(theme, Qt.MatchFixedString)
+        self.dockwidget.PresetComboBox.setCurrentIndex(index)
 
     def theme_down(self):
         max = len(self.dockwidget.getAvailableThemes())
@@ -316,13 +312,6 @@ class Selector:
         self.populate()
         self.theme_changed()
 
-    def replace_maptheme(self):
-        theme = self.dockwidget.PresetComboBox.currentText()
-        root = QgsProject.instance().layerTreeRoot()
-        model = iface.layerTreeView().layerTreeModel()
-        rec = QgsProject.instance().mapThemeCollection().createThemeFromCurrentState(root, model)
-        QgsProject.instance().mapThemeCollection().update(theme, rec)
-
     def add_maptheme(self):
         quest = QInputDialog.getText(None,
                                      self.tr(u'Themename'),
@@ -359,14 +348,11 @@ class Selector:
             QgsProject.instance().mapThemeCollection().applyTheme(
                 name, root, model
             )
-
             QgsProject.instance().mapThemeCollection().removeMapTheme(theme)
-
             self.populate()
             self.theme_changed()
             self.set_combo_text(name)
             return
-
 
     def duplicate_maptheme(self):
         theme = self.dockwidget.PresetComboBox.currentText()

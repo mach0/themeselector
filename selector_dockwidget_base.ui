@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>274</width>
+    <width>218</width>
     <height>128</height>
    </rect>
   </property>
@@ -34,14 +34,14 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1" colspan="3">
+    <item row="0" column="1" colspan="2">
      <widget class="QComboBox" name="PresetComboBox">
       <property name="toolTip">
        <string>Themebox</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="4">
+    <item row="0" column="3">
      <widget class="QPushButton" name="pushButton_down">
       <property name="toolTip">
        <string>Ctrl-Down Shortcut</string>
@@ -58,16 +58,6 @@
      </widget>
     </item>
     <item row="1" column="0" colspan="2">
-     <widget class="QPushButton" name="pushButton_replace">
-      <property name="toolTip">
-       <string>Replace theme in dropdown box with what is actually on map</string>
-      </property>
-      <property name="text">
-       <string>Replace</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="2">
      <widget class="QPushButton" name="pushButton_rename">
       <property name="toolTip">
        <string>Rename theme</string>
@@ -77,7 +67,7 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="3" colspan="2">
+    <item row="1" column="2" colspan="2">
      <widget class="QPushButton" name="pushButton_remove">
       <property name="toolTip">
        <string>Remove theme</string>
@@ -93,7 +83,7 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="2">
+    <item row="2" column="0" colspan="2">
      <widget class="QPushButton" name="pushButton_duplicate">
       <property name="toolTip">
        <string>Duplicate theme</string>
@@ -103,7 +93,7 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="3" colspan="2">
+    <item row="2" column="2" colspan="2">
      <widget class="QPushButton" name="pushButton_add">
       <property name="toolTip">
        <string>Add shown map layers as new theme</string>
