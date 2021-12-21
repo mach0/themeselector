@@ -229,6 +229,7 @@ class Selector:
             self.iface.mapCanvas().layersChanged.connect(self.set_combo_theme)
             
             self.dockwidget.PresetComboBox.currentIndexChanged.connect(self.theme_changed)
+            self.dockwidget.pushButton_replace.clicked.connect(self.replace_maptheme)
             self.dockwidget.pushButton_add.clicked.connect(self.add_maptheme)
             self.dockwidget.pushButton_remove.clicked.connect(self.remove_maptheme)
             self.dockwidget.pushButton_rename.clicked.connect(self.rename_maptheme)
@@ -244,6 +245,12 @@ class Selector:
         else:
             self.pluginIsActive = False
             self.dockwidget.close()
+        if len(QgsProject.instance().mapLayers()) == 0:
+            self.dockwidget.pushButton_add.setEnabled(False)
+            self.dockwidget.pushButton_remove.setEnabled(False)
+            self.dockwidget.pushButton_rename.setEnabled(False)
+            self.dockwidget.pushButton_replace.setEnabled(False)
+            self.dockwidget.pushButton_duplicate.setEnabled(False)
 
     def clear(self):
         self.dockwidget.PresetComboBox.clear()
@@ -258,6 +265,9 @@ class Selector:
         self.set_combo_theme()
         self.dockwidget.pushButton_add.setEnabled(True)
         self.dockwidget.pushButton_remove.setEnabled(True)
+        self.dockwidget.pushButton_rename.setEnabled(True)
+        self.dockwidget.pushButton_replace.setEnabled(True)
+        self.dockwidget.pushButton_duplicate.setEnabled(True)
     
     def set_combo_theme(self):
         theme = self.get_current_theme()
@@ -312,6 +322,13 @@ class Selector:
         QgsProject.instance().mapThemeCollection().removeMapTheme(theme)
         self.populate()
         self.theme_changed()
+
+    def replace_maptheme(self):
+        theme = self.dockwidget.PresetComboBox.currentText()
+        root = QgsProject.instance().layerTreeRoot()
+        model = iface.layerTreeView().layerTreeModel()
+        rec = QgsProject.instance().mapThemeCollection().createThemeFromCurrentState(root, model)
+        QgsProject.instance().mapThemeCollection().update(theme, rec)
 
     def add_maptheme(self):
         quest = QInputDialog.getText(None,
