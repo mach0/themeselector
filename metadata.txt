@@ -9,12 +9,13 @@ about=Take saved themes and apply them with a selection by dropdown.
 about[de]=Das Plugin stellt im Projekt gespeicherte Themen über ein Dropdown-Fenster zur Verfügung.
 
 category=Plugins
-version=3.2
+version=3.2.1
 author=Werner Macho für Wagner-IT
 email=werner.macho@gmail.com
 
 ; optional metadata entries
 changelog=
+    3.2.1 fix display bug after 3.2 release
     3.2 Added CTRL-Up and CTRL-Down as Shortcuts 
     3.1 bugfixing minor bugs
     3.0 public version for QGIS 3.x

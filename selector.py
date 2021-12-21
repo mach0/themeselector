@@ -258,6 +258,11 @@ class Selector:
         self.dockwidget.pushButton_add.setEnabled(True)
         self.dockwidget.pushButton_remove.setEnabled(True)
     
+    def set_combo_theme(self):
+        theme = self.get_current_theme()
+        index = self.dockwidget.PresetComboBox.findText(theme, Qt.MatchFixedString)
+        self.dockwidget.PresetComboBox.setCurrentIndex(index)
+
     def get_current_theme(self):
         ProjectInstance = QgsProject.instance()
         mTC = ProjectInstance.mapThemeCollection()
@@ -268,11 +273,6 @@ class Selector:
         for theme in themes:
             if mTC.mapThemeState(theme) == currentTheme:
                 return theme
-
-    def set_combo_theme(self):
-        theme = self.get_current_theme()
-        index = self.dockwidget.PresetComboBox.findText(theme, Qt.MatchFixedString)
-        self.dockwidget.PresetComboBox.setCurrentIndex(index)
 
     def theme_down(self):
         max = len(self.dockwidget.getAvailableThemes())
@@ -301,7 +301,6 @@ class Selector:
         theme = self.dockwidget.PresetComboBox.currentText()
         root = QgsProject.instance().layerTreeRoot()
         model = iface.layerTreeView().layerTreeModel()
-        
         QgsProject.instance().mapThemeCollection().applyTheme(
             theme, root, model
         )
@@ -368,7 +367,7 @@ class Selector:
         if ok and name != "":
             rec = QgsProject.instance().mapThemeCollection().createThemeFromCurrentState(root, model)
             QgsProject.instance().mapThemeCollection().insert(name, rec)
-            self.set_combo_text(name)
             self.populate()
+            self.set_combo_text(name)
             self.theme_changed()
             return
