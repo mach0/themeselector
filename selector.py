@@ -230,7 +230,7 @@ class Selector:
             QgsProject.instance().cleared.connect(self.clear)
             QgsProject.instance().readProject.connect(self.populate)
 
-            #QgsProject.instance().mapThemeCollection().mapThemesChanged.connect(self.populate)
+            #QgsProject.instance().mapThemeCollection.projectChanged(self.populate)
             self.dockwidget.PresetComboBox.currentIndexChanged.connect(self.theme_changed)
             self.dockwidget.pushButton_replace.clicked.connect(self.replace_maptheme)
             self.dockwidget.pushButton_add.clicked.connect(self.add_maptheme)
@@ -243,8 +243,6 @@ class Selector:
             icon_down_path = QFileInfo(__file__).absolutePath() + '/img/mActionArrowDown.svg'
             icon_down = QIcon(icon_down_path)
             self.dockwidget.pushButton_down.setIcon(icon_down)
-            #self.dockwidget.pushButton_up.setVisible(False)
-            #self.dockwidget.pushButton_up.setEnabled(True)
             self.dockwidget.pushButton_up.clicked.connect(self.theme_up)
             self.dockwidget.pushButton_down.clicked.connect(self.theme_down)
 
@@ -262,11 +260,11 @@ class Selector:
         themes = self.dockwidget.getAvailableThemes()
         for setting in themes:
             self.dockwidget.PresetComboBox.addItem(setting)
-
+        theme = self.get_current_theme()
+        index = self.dockwidget.PresetComboBox.findText(theme, Qt.MatchFixedString)
+        self.dockwidget.PresetComboBox.setCurrentIndex(index)
         self.dockwidget.pushButton_add.setEnabled(True)
         self.dockwidget.pushButton_remove.setEnabled(True)
-        theme = self.get_current_theme()
-        print("help")
     
     def get_current_theme(self):
         ProjectInstance = QgsProject.instance()
