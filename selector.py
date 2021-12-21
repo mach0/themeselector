@@ -227,6 +227,7 @@ class Selector:
             QgsProject.instance().readProject.connect(self.populate)
             # connect QGIS layertool to themeselector
             self.iface.mapCanvas().layersChanged.connect(self.set_combo_theme)
+            
             self.dockwidget.PresetComboBox.currentIndexChanged.connect(self.theme_changed)
             self.dockwidget.pushButton_add.clicked.connect(self.add_maptheme)
             self.dockwidget.pushButton_remove.clicked.connect(self.remove_maptheme)
@@ -260,8 +261,9 @@ class Selector:
     
     def set_combo_theme(self):
         theme = self.get_current_theme()
-        index = self.dockwidget.PresetComboBox.findText(theme, Qt.MatchFixedString)
-        self.dockwidget.PresetComboBox.setCurrentIndex(index)
+        if theme != None:
+            index = self.dockwidget.PresetComboBox.findText(theme, Qt.MatchFixedString)
+            self.dockwidget.PresetComboBox.setCurrentIndex(index)
 
     def get_current_theme(self):
         ProjectInstance = QgsProject.instance()
