@@ -244,6 +244,7 @@ class Selector:
             self.dockwidget.pushButton_down.clicked.connect(self.theme_down)
         else:
             self.pluginIsActive = False
+            self.clear()
             self.dockwidget.close()
         if len(QgsProject.instance().mapLayers()) == 0:
             self.dockwidget.pushButton_add.setEnabled(False)
@@ -256,6 +257,9 @@ class Selector:
         self.dockwidget.PresetComboBox.clear()
         self.dockwidget.pushButton_add.setEnabled(False)
         self.dockwidget.pushButton_remove.setEnabled(False)
+        self.dockwidget.pushButton_rename.setEnabled(False)
+        self.dockwidget.pushButton_replace.setEnabled(False)
+        self.dockwidget.pushButton_duplicate.setEnabled(False)
 
     def populate(self):
         self.clear()
