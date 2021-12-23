@@ -208,7 +208,6 @@ class Selector:
 
     def run(self):
         """Run method that loads and starts the plugin"""
-        # TODO: Check if there is a loaded project - if not deactivate buttons
         if not self.pluginIsActive:
             self.pluginIsActive = True
             # dockwidget may not exist if:
@@ -219,6 +218,7 @@ class Selector:
                 self.dockwidget = SelectorDockWidget()
             # connect to provide cleanup on closing of dockwidget
             self.dockwidget.closingPlugin.connect(self.onClosePlugin)
+            # add widget to widgetarea
             self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dockwidget)
             self.dockwidget.show()
 
