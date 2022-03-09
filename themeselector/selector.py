@@ -1,25 +1,26 @@
 # -*- coding: utf-8 -*-
 """
-/***************************************************************************
  ThemeSelector
-                                 A QGIS plugin
- This plugin brings the layer theme settings directly to the desktop
-                              -------------------
-        begin                : 2017-07-13
-        git sha              : $Format:%H$
-        copyright            : (C) 2017 by Werner Macho
-        email                : werner.macho@gmail.com
- ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-"""
+ A QGIS plugin
+ This plugin brings the layer theme settings directly to the desktop
+
+    begin                : 2017-07-13
+    git sha              : $Format:%H$
+    copyright            : (C) 2017 by Werner Macho
+    email                : werner.macho@gmail.com
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ """
+
+import os.path
+from qgis.utils import iface
+# Import the code for the DockWidget
+from .selector_dockwidget import SelectorDockWidget
+
 from qgis.PyQt.QtCore import (
     QSettings,
     QTranslator,
@@ -41,11 +42,6 @@ from qgis.core import (
 from qgis.gui import (
     QgsMapCanvas
 )
-from qgis.utils import iface
-
-# Import the code for the DockWidget
-from .selector_dockwidget import SelectorDockWidget
-import os.path
 
 
 class Selector:
@@ -102,7 +98,7 @@ class Selector:
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('Selector', message)
-    
+
     def add_action(
         self,
         icon_path,
@@ -227,7 +223,7 @@ class Selector:
             QgsProject.instance().readProject.connect(self.populate)
             # connect QGIS layertool to themeselector
             self.iface.mapCanvas().layersChanged.connect(self.set_combo_theme)
-            
+
             self.dockwidget.PresetComboBox.currentIndexChanged.connect(self.theme_changed)
             self.dockwidget.pushButton_replace.clicked.connect(self.replace_maptheme)
             self.dockwidget.pushButton_add.clicked.connect(self.add_maptheme)
@@ -272,10 +268,10 @@ class Selector:
         self.dockwidget.pushButton_rename.setEnabled(True)
         self.dockwidget.pushButton_replace.setEnabled(True)
         self.dockwidget.pushButton_duplicate.setEnabled(True)
-    
+
     def set_combo_theme(self):
         theme = self.get_current_theme()
-        if theme != None:
+        if theme is not None:
             index = self.dockwidget.PresetComboBox.findText(theme, Qt.MatchFixedString)
             self.dockwidget.PresetComboBox.setCurrentIndex(index)
 
@@ -291,10 +287,10 @@ class Selector:
                 return theme
 
     def theme_down(self):
-        max = len(self.dockwidget.getAvailableThemes())
+        maximum = len(self.dockwidget.getAvailableThemes())
         theme = self.dockwidget.PresetComboBox.currentText()
         index = self.dockwidget.PresetComboBox.findText(theme, Qt.MatchFixedString)
-        if index < max-1:
+        if index < maximum-1:
             index = index + 1
             self.dockwidget.PresetComboBox.setCurrentIndex(index)
             self.theme_changed()
