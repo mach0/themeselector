@@ -20,6 +20,7 @@
  *                                                                         *
  ***************************************************************************/
 """
+# pylint: disable = no-name-in-module
 
 import os
 
@@ -41,6 +42,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 
 class SelectorDockWidget(QDockWidget, FORM_CLASS):
+    """dockwidget main class"""
 
     closingPlugin = pyqtSignal()
 
@@ -50,10 +52,12 @@ class SelectorDockWidget(QDockWidget, FORM_CLASS):
         self.setupUi(self)
 
     def closeEvent(self, event):
+        """close event"""
         self.closingPlugin.emit()
         event.accept()
 
     def getAvailableThemes(self):
+        """get themes"""
         prj = QgsProject.instance()
         themes = prj.mapThemeCollection().mapThemes()
         return themes
