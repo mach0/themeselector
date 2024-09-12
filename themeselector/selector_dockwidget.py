@@ -24,18 +24,9 @@
 
 import os
 
-from qgis.PyQt import (
-    uic
-)
-from qgis.PyQt.QtCore import (
-    pyqtSignal
-)
-from qgis.PyQt.QtWidgets import (
-    QDockWidget
-)
-from qgis.core import (
-    QgsProject
-)
+from qgis.PyQt import uic
+from qgis.PyQt.QtWidgets import QDockWidget
+from qgis.core import QgsProject
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'selector_dockwidget_base.ui'))
@@ -44,17 +35,14 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 class SelectorDockWidget(QDockWidget, FORM_CLASS):
     """dockwidget main class"""
 
-    closingPlugin = pyqtSignal()
-
     def __init__(self, parent=None):
         """Constructor."""
-        super(SelectorDockWidget, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
 
-    def closeEvent(self, event):
-        """close event"""
-        self.closingPlugin.emit()
-        event.accept()
+    # def closeEvent(self, event):
+    #     """close event"""
+    #     event.accept()
 
     def getAvailableThemes(self):
         """get themes"""
