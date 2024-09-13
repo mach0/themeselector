@@ -40,10 +40,6 @@ class SelectorDockWidget(QDockWidget, FORM_CLASS):
         super().__init__(parent)
         self.setupUi(self)
 
-    # def closeEvent(self, event):
-    #     """close event"""
-    #     event.accept()
-
     def getAvailableThemes(self):
         """get themes"""
         prj = QgsProject.instance()

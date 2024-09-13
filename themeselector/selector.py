@@ -11,9 +11,9 @@ This plugin brings the layer theme settings directly to the desktop
     email                : werner.macho@gmail.com
 
     This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 """
 # pylint: disable = no-name-in-module
 
@@ -38,15 +38,11 @@ from .selector_dockwidget import SelectorDockWidget
 
 
 class Selector:
-    """QGIS Plugin Implementation."""
+    """QGIS Plugin Implementation.
+    """
 
     def __init__(self, iface):
         """Constructor.
-
-        :param iface: An interface instance that will be passed to this class
-            which provides the hook by which you can manipulate the QGIS
-            application at run time.
-        :type iface: QgsInterface
         """
         # Save reference to the QGIS interface
         self.iface = iface
@@ -71,14 +67,6 @@ class Selector:
 
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
-
-        We implement this ourselves since we do not inherit QObject.
-
-        :param message: String for translation.
-        :type message: str, QString
-
-        :returns: Translated version of message.
-        :rtype: QString
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('Selector', message)
@@ -86,11 +74,9 @@ class Selector:
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
         # Create the dockwidget (after translation) and keep reference
-   
+
         self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dockwidget)
         self.dockwidget.show()
-
-
         icon_path = QFileInfo(__file__).absolutePath() + '/img/selector.svg'
         self.action.setIcon(QIcon(icon_path))
         self.action.setText(self.tr('Theme&Selector'))
@@ -269,7 +255,7 @@ class Selector:
         model = iface.layerTreeView().layerTreeModel()
         name, ok = quest
         if ok and name != "":
-            rec= QgsProject.instance().mapThemeCollection().createThemeFromCurrentState(root, model)
+            rec = QgsProject.instance().mapThemeCollection().createThemeFromCurrentState(root, model)
             QgsProject.instance().mapThemeCollection().insert(name, rec)
             self.populate()
             QgsProject.instance().mapThemeCollection().applyTheme(
