@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+.pylintrc
 .idea
 .vscode
 # C extensions
