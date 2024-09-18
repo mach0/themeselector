@@ -107,7 +107,7 @@ class Selector:
         QgsProject.instance().readProject.connect(self.populate)
         self.iface.mapCanvas().layersChanged.connect(self.set_combo_theme)
 
-        self.dockwidget.PresetComboBox.currentIndexChanged.connect(self.theme_changed)
+        self.dockwidget.PresetComboBox.currentIndexChanged.connect(self.apply_selected_theme)
         self.dockwidget.pushButton_replace.clicked.connect(self.replace_maptheme)
         self.dockwidget.pushButton_add.clicked.connect(self.add_maptheme)
         self.dockwidget.pushButton_remove.clicked.connect(self.remove_maptheme)
@@ -148,47 +148,38 @@ class Selector:
             self.dockwidget.PresetComboBox.setCurrentIndex(index)
 
     def get_current_theme(self):
-        """Retrieve the current theme."""
-        project_instance = QgsProject.instance()
-        map_theme_collection = project_instance.mapThemeCollection()
-        themes = self.dockwidget.getAvailableThemes()
-        root = project_instance.layerTreeRoot()
-        model = iface.layerTreeView().layerTreeModel()
-        current_theme = map_theme_collection.createThemeFromCurrentState(root, model)
-
-        for theme in themes:
-            if map_theme_collection.mapThemeState(theme) == current_theme:
-                return theme
-
-    def theme_down(self):
-        """Switch to the next theme."""
-        maximum = len(self.dockwidget.getAvailableThemes())
-        index = self.dockwidget.PresetComboBox.currentIndex()
-
-        if index < maximum - 1:
-            self.dockwidget.PresetComboBox.setCurrentIndex(index + 1)
-            self.theme_changed()
+        """Retrieve the currently selected theme by name."""
+        return self.dockwidget.PresetComboBox.currentText()
 
     def theme_up(self):
-        """Switch to the previous theme."""
+        """Move to the previous theme based on the index in the combobox."""
         index = self.dockwidget.PresetComboBox.currentIndex()
-
         if index > 0:
+            # Move to the previous theme by decreasing index
             self.dockwidget.PresetComboBox.setCurrentIndex(index - 1)
-            self.theme_changed()
+            self.apply_selected_theme()  
+
+    def theme_down(self):
+        """Move to the next theme based on the index in the combobox."""
+        maximum = self.dockwidget.PresetComboBox.count()  # Total number of themes
+        index = self.dockwidget.PresetComboBox.currentIndex()
+        if index < maximum - 1:
+            # Move to the next theme by increasing index
+            self.dockwidget.PresetComboBox.setCurrentIndex(index + 1)
+            self.apply_selected_theme()  
+
+    def apply_selected_theme(self):
+        """Apply the selected theme based on the current combobox selection."""
+        theme_name = self.dockwidget.PresetComboBox.currentText()
+        root = QgsProject.instance().layerTreeRoot()
+        model = iface.layerTreeView().layerTreeModel()
+        QgsProject.instance().mapThemeCollection().applyTheme(theme_name, root, model)
 
     def set_combo_text(self, name):
         """Set combobox to the newly created theme."""
         index = self.dockwidget.PresetComboBox.findText(name, Qt.MatchFixedString)
         if index >= 0:
             self.dockwidget.PresetComboBox.setCurrentIndex(index)
-
-    def theme_changed(self):
-        """Apply the selected theme."""
-        theme = self.dockwidget.PresetComboBox.currentText()
-        root = QgsProject.instance().layerTreeRoot()
-        model = iface.layerTreeView().layerTreeModel()
-        QgsProject.instance().mapThemeCollection().applyTheme(theme, root, model)
 
     def remove_maptheme(self):
         """Remove the selected theme."""
