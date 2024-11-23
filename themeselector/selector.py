@@ -57,10 +57,13 @@ class Selector:
             self.plugin_dir,
             'i18n',
             f'{locale}.qm')
+        
+        print(f"Detected locale: {locale}")
 
         if os.path.exists(locale_path):
             self.translator = QTranslator()
             self.translator.load(locale_path)
+            QCoreApplication.installTranslator(self.translator)
 
         self.dockwidget = SelectorDockWidget()
         self.action = self.dockwidget.toggleViewAction()
@@ -99,12 +102,24 @@ class Selector:
 
         # Save the size of the dock widget
         settings = QSettings()
+        QSettings.setDefaultFormat(QSettings.IniFormat)
+        saved_size = settings.value("ThemeSelector/size", QSize(300, 200))
+        if isinstance(saved_size, QSize):
+            self.dockwidget.resize(saved_size)
+        elif isinstance(saved_size, str):  # Handle improperly serialized values
+            try:
+                width, height = map(int, saved_size.strip("()").split(","))
+                self.dockwidget.resize(QSize(width, height))
+            except ValueError:
+                self.dockwidget.resize(QSize(300, 200))  # Default size
+        settings = QSettings()
         settings.setValue("ThemeSelector/size", self.dockwidget.size())
 
     def connect_signals(self):
         """Connect various signals and slots."""
         QgsProject.instance().cleared.connect(self.clear)
         QgsProject.instance().readProject.connect(self.populate)
+        # QgsProject.instance().layersAdded.connect(self.on_layer_added)
         self.iface.mapCanvas().layersChanged.connect(self.set_combo_theme)
 
         self.dockwidget.PresetComboBox.currentIndexChanged.connect(self.apply_selected_theme)
