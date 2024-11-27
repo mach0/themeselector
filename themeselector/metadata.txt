@@ -9,12 +9,13 @@ about=Take saved themes and apply them with a selection by dropdown.
 about[de]=Das Plugin stellt im Projekt gespeicherte Themen über ein Dropdown-Fenster zur Verfügung.
 
 category=Plugins
-version=3.3.5
+version=3.3.6
 author=Werner Macho für Wagner-IT
 email=werner.macho@gmail.com
 
 ; optional metadata entries
 changelog=
+    3.3.6 update main application on change
     3.3.5 Make Translation files work again
     3.3.4 Fix size settings for MS Windows
     3.3.3 Theme selection based on names

@@ -32,7 +32,7 @@ from qgis.PyQt.QtWidgets import (
     QMessageBox
 )
 from qgis.PyQt.QtGui import QIcon
-from qgis.core import QgsProject, QgsMapThemeCollection, QgsLayoutItemMap
+from qgis.core import QgsProject, QgsLayoutItemMap
 
 
 # Import the code for the DockWidget
@@ -57,7 +57,7 @@ class Selector:
             self.plugin_dir,
             'i18n',
             f'{locale}.qm')
-        
+
         print(f"Detected locale: {locale}")
 
         if os.path.exists(locale_path):
@@ -123,9 +123,6 @@ class Selector:
         self.iface.mapCanvas().layersChanged.connect(self.set_combo_theme)
         # Connect to map theme collection changes
         QgsProject.instance().mapThemeCollection().projectChanged.connect(self.populate)
-        #QgsProject.instance().mapThemeCollection().mapThemeChanged.connect(self.populate)
-        #QgsProject.instance().mapThemeCollection().mapThemesChanged.connect(self.populate)
-        #QgsProject.instance().mapThemesCollection().mapThemesChanged.connect(self.populate)
 
         self.dockwidget.PresetComboBox.currentIndexChanged.connect(self.apply_selected_theme)
         self.dockwidget.pushButton_replace.clicked.connect(self.replace_maptheme)
@@ -255,10 +252,6 @@ class Selector:
             if theme in map_collection.mapThemes():
                 # Rename the theme in the map theme collection
                 map_collection.renameMapTheme(theme, name)
-
-                # Reapply the updated theme to the layers and layouts
-                root = QgsProject.instance().layerTreeRoot()
-                model = iface.layerTreeView().layerTreeModel()
 
                 # Apply the newly renamed theme to all layouts
                 layout_manager = QgsProject.instance().layoutManager()

@@ -2,59 +2,61 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de_DE">
 <context>
-    <name>@default</name>
-    <message>
-        <location filename="../test/test_translations.py" line="48"/>
-        <source>Good morning</source>
-        <translation>Guten Morgen</translation>
-    </message>
-</context>
-<context>
     <name>Selector</name>
     <message>
-        <location filename="../selector.py" line="87"/>
-        <source>Themeselector</source>
-        <translation>Themenauswahl</translation>
-    </message>
-    <message>
-        <location filename="../selector.py" line="203"/>
+        <location filename="../selector.py" line="89"/>
         <source>Theme&amp;Selector</source>
         <translation>Themenau&amp;swahl</translation>
     </message>
     <message>
-        <location filename="../selector.py" line="338"/>
+        <location filename="../selector.py" line="232"/>
         <source>Themename</source>
         <translation>Themenname</translation>
     </message>
     <message>
-        <location filename="../selector.py" line="338"/>
+        <location filename="../selector.py" line="232"/>
         <source>Name of the new theme</source>
         <translation>Name des neuen Themas</translation>
     </message>
     <message>
-        <location filename="../selector.py" line="357"/>
+        <location filename="../selector.py" line="243"/>
         <source>Rename Theme</source>
         <translation>Thema Umbenennen</translation>
     </message>
     <message>
-        <location filename="../selector.py" line="357"/>
+        <location filename="../selector.py" line="243"/>
         <source>New Name:</source>
         <translation>Neuer Name:</translation>
     </message>
     <message>
-        <location filename="../selector.py" line="381"/>
-        <source>Duplicate theme</source>
-        <translation>Thema Kopieren</translation>
+        <location filename="../selector.py" line="225"/>
+        <source>Theme Exists</source>
+        <translation>Thema existiert</translation>
     </message>
     <message>
-        <location filename="../selector.py" line="381"/>
-        <source>Copy theme </source>
-        <translation>Kopiere Thema </translation>
+        <location filename="../selector.py" line="225"/>
+        <source>The theme &apos;{existing_theme}&apos; already exists with this configuration. Do you still want to create a new theme?</source>
+        <translation>Das Thema &apos;{existing_theme}&apos; existiert bereits in dieser Konfiguration. Möchten Sie trotzdem ein neues Thema erstellen?</translation>
     </message>
     <message>
-        <location filename="../selector.py" line="381"/>
-        <source> to theme </source>
-        <translation> nach Thema </translation>
+        <location filename="../selector.py" line="269"/>
+        <source>Theme Not Found</source>
+        <translation>Thema nicht gefunden</translation>
+    </message>
+    <message>
+        <location filename="../selector.py" line="269"/>
+        <source>The theme &apos;{theme}&apos; was not found in the map theme collection.</source>
+        <translation>Das Thema &apos;{theme}&apos; wurde nicht in der Sammlung der Kartenthemen gefunden.</translation>
+    </message>
+    <message>
+        <location filename="../selector.py" line="275"/>
+        <source>Duplicate Theme</source>
+        <translation>Thema kopieren</translation>
+    </message>
+    <message>
+        <location filename="../selector.py" line="275"/>
+        <source>Name of the new theme:</source>
+        <translation>Name des neuen Themas:</translation>
     </message>
 </context>
 <context>

@@ -1,58 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0">
-<context>
-    <name>@default</name>
-    <message>
-        <location filename="../test/test_translations.py" line="48"/>
-        <source>Good morning</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
+<!DOCTYPE TS>
+<TS version="2.1">
 <context>
     <name>Selector</name>
     <message>
-        <location filename="../selector.py" line="87"/>
-        <source>Themeselector</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../selector.py" line="203"/>
+        <location filename="../selector.py" line="89"/>
         <source>Theme&amp;Selector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../selector.py" line="338"/>
+        <location filename="../selector.py" line="232"/>
         <source>Themename</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../selector.py" line="338"/>
+        <location filename="../selector.py" line="232"/>
         <source>Name of the new theme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../selector.py" line="357"/>
+        <location filename="../selector.py" line="243"/>
         <source>Rename Theme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../selector.py" line="357"/>
+        <location filename="../selector.py" line="243"/>
         <source>New Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../selector.py" line="381"/>
-        <source>Duplicate theme</source>
+        <location filename="../selector.py" line="225"/>
+        <source>Theme Exists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../selector.py" line="381"/>
-        <source>Copy theme </source>
+        <location filename="../selector.py" line="225"/>
+        <source>The theme &apos;{existing_theme}&apos; already exists with this configuration. Do you still want to create a new theme?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../selector.py" line="381"/>
-        <source> to theme </source>
+        <location filename="../selector.py" line="269"/>
+        <source>Theme Not Found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../selector.py" line="269"/>
+        <source>The theme &apos;{theme}&apos; was not found in the map theme collection.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../selector.py" line="275"/>
+        <source>Duplicate Theme</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../selector.py" line="275"/>
+        <source>Name of the new theme:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

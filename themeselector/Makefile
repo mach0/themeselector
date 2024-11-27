@@ -170,8 +170,8 @@ transup:
 	@echo "------------------------------------------------"
 	@echo "Updating translation files with any new strings."
 	@echo "------------------------------------------------"
-	@chmod +x scripts/update-strings.sh
-	@scripts/update-strings.sh $(LOCALES)
+	@chmod +x ../scripts/update-strings.sh
+	@../scripts/update-strings.sh $(LOCALES)
 
 transcompile:
 	@echo
