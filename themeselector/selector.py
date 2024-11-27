@@ -32,7 +32,7 @@ from qgis.PyQt.QtWidgets import (
     QMessageBox
 )
 from qgis.PyQt.QtGui import QIcon
-from qgis.core import QgsProject
+from qgis.core import QgsProject, QgsMapThemeCollection, QgsLayoutItemMap
 
 
 # Import the code for the DockWidget
@@ -119,8 +119,13 @@ class Selector:
         """Connect various signals and slots."""
         QgsProject.instance().cleared.connect(self.clear)
         QgsProject.instance().readProject.connect(self.populate)
-        # QgsProject.instance().layersAdded.connect(self.on_layer_added)
+
         self.iface.mapCanvas().layersChanged.connect(self.set_combo_theme)
+        # Connect to map theme collection changes
+        QgsProject.instance().mapThemeCollection().projectChanged.connect(self.populate)
+        #QgsProject.instance().mapThemeCollection().mapThemeChanged.connect(self.populate)
+        #QgsProject.instance().mapThemeCollection().mapThemesChanged.connect(self.populate)
+        #QgsProject.instance().mapThemesCollection().mapThemesChanged.connect(self.populate)
 
         self.dockwidget.PresetComboBox.currentIndexChanged.connect(self.apply_selected_theme)
         self.dockwidget.pushButton_replace.clicked.connect(self.replace_maptheme)
@@ -236,21 +241,40 @@ class Selector:
             self.set_combo_text(name)
 
     def rename_maptheme(self):
-        """Rename the selected theme."""
+        """Rename the selected theme and update map layouts."""
         theme = self.dockwidget.PresetComboBox.currentText()
         name, ok = QInputDialog.getText(None, self.tr('Rename Theme'),
                                         self.tr('New Name:'),
                                         0,
                                         theme)
         if ok and name != "":
+            # Access the map theme collection via QgsProject instance
             map_collection = QgsProject.instance().mapThemeCollection()
-            root = QgsProject.instance().layerTreeRoot()
-            model = iface.layerTreeView().layerTreeModel()
-            rec = map_collection.createThemeFromCurrentState(root, model)
-            map_collection.insert(name, rec)
-            map_collection.removeMapTheme(theme)
-            self.populate()
-            self.set_combo_text(name)
+
+            # Ensure the theme exists in the collection before renaming
+            if theme in map_collection.mapThemes():
+                # Rename the theme in the map theme collection
+                map_collection.renameMapTheme(theme, name)
+
+                # Reapply the updated theme to the layers and layouts
+                root = QgsProject.instance().layerTreeRoot()
+                model = iface.layerTreeView().layerTreeModel()
+
+                # Apply the newly renamed theme to all layouts
+                layout_manager = QgsProject.instance().layoutManager()
+                for layout in layout_manager.layouts():
+                    for item in layout.items():
+                        if isinstance(item, QgsLayoutItemMap):
+                            # Refresh the map item
+                            item.refresh()
+                            print(f"Refreshed map item in layout '{layout.name()}' for map item.")
+
+                # Repopulate the combobox and set the selected theme
+                self.populate()
+                self.set_combo_text(name)
+            else:
+                QMessageBox.warning(None, self.tr("Theme Not Found"),
+                                    self.tr(f"The theme '{theme}' was not found in the map theme collection."))
 
     def duplicate_maptheme(self):
         """Duplicate the selected theme."""
