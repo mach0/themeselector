@@ -34,18 +34,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../selector.py" line="225"/>
-        <source>The theme &apos;{existing_theme}&apos; already exists with this configuration. Do you still want to create a new theme?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../selector.py" line="269"/>
         <source>Theme Not Found</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../selector.py" line="269"/>
-        <source>The theme &apos;{theme}&apos; was not found in the map theme collection.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -56,6 +46,16 @@
     <message>
         <location filename="../selector.py" line="275"/>
         <source>Name of the new theme:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../selector.py" line="225"/>
+        <source>The theme &apos;%1&apos; already exists with this configuration. Do you still want to create a new theme?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../selector.py" line="269"/>
+        <source>The theme &apos;%1&apos; was not found in the map theme collection.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

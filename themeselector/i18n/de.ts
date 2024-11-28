@@ -34,19 +34,9 @@
         <translation>Thema existiert</translation>
     </message>
     <message>
-        <location filename="../selector.py" line="225"/>
-        <source>The theme &apos;{existing_theme}&apos; already exists with this configuration. Do you still want to create a new theme?</source>
-        <translation>Das Thema &apos;{existing_theme}&apos; existiert bereits in dieser Konfiguration. Möchten Sie trotzdem ein neues Thema erstellen?</translation>
-    </message>
-    <message>
         <location filename="../selector.py" line="269"/>
         <source>Theme Not Found</source>
         <translation>Thema nicht gefunden</translation>
-    </message>
-    <message>
-        <location filename="../selector.py" line="269"/>
-        <source>The theme &apos;{theme}&apos; was not found in the map theme collection.</source>
-        <translation>Das Thema &apos;{theme}&apos; wurde nicht in der Sammlung der Kartenthemen gefunden.</translation>
     </message>
     <message>
         <location filename="../selector.py" line="275"/>
@@ -57,6 +47,16 @@
         <location filename="../selector.py" line="275"/>
         <source>Name of the new theme:</source>
         <translation>Name des neuen Themas:</translation>
+    </message>
+    <message>
+        <location filename="../selector.py" line="225"/>
+        <source>The theme &apos;%1&apos; already exists with this configuration. Do you still want to create a new theme?</source>
+        <translation>Das Thema &apos;%1&apos; existiert bereits mit dieser Konfiguration. Möchten Sie trotzdem ein neues Thema erstellen?</translation>
+    </message>
+    <message>
+        <location filename="../selector.py" line="269"/>
+        <source>The theme &apos;%1&apos; was not found in the map theme collection.</source>
+        <translation>Das Thema &apos;%1&apos; wurde in der Sammlung der Kartenthemen nicht gefunden.</translation>
     </message>
 </context>
 <context>

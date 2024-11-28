@@ -223,8 +223,8 @@ class Selector:
         for existing_theme in map_collection.mapThemes():
             if map_collection.mapThemeState(existing_theme) == current_state:
                 msg = QMessageBox.warning(None, self.tr("Theme Exists"),
-                                          self.tr(f"The theme '{existing_theme}' already exists with this configuration. "
-                                                  "Do you still want to create a new theme?"), QMessageBox.Yes | QMessageBox.No)
+                                          self.tr("The theme '%1' already exists with this configuration. "
+                                                  "Do you still want to create a new theme?").replace('%1', existing_theme), QMessageBox.Yes | QMessageBox.No)
                 if msg == QMessageBox.No:
                     return
 
@@ -267,7 +267,7 @@ class Selector:
                 self.set_combo_text(name)
             else:
                 QMessageBox.warning(None, self.tr("Theme Not Found"),
-                                    self.tr(f"The theme '{theme}' was not found in the map theme collection."))
+                                    self.tr("The theme '%1' was not found in the map theme collection.").replace('%1', theme))
 
     def duplicate_maptheme(self):
         """Duplicate the selected theme."""
