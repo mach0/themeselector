@@ -18,21 +18,35 @@
 
 import os
 from qgis.PyQt import uic
+#from PyQt6.uic import loadUi
 from qgis.PyQt.QtWidgets import QDockWidget
 from qgis.core import QgsProject
 
 # Load the UI file dynamically using uic
-FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__),
-                                            'selector_dockwidget_base.ui'))
+#FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__),
+#                                            'selector_dockwidget_base.ui'))
 
 
-class SelectorDockWidget(QDockWidget, FORM_CLASS):
-    """Main class for the Theme Selector dock widget."""
-
+class SelectorDockWidget(QDockWidget):
     def __init__(self, parent=None):
-        """Constructor: Set up the UI and initialize attributes."""
         super().__init__(parent)
-        self.setupUi(self)
+
+        # Construct the path to the UI file dynamically
+        ui_path = os.path.join(os.path.dirname(__file__), 'selector_dockwidget_base.ui')
+        uic.loadUi(ui_path, self)
+
+        # Set dock widget features
+        dock_features = getattr(
+            QDockWidget,
+            'AllDockWidgetFeatures',
+            QDockWidget.DockWidgetFeature.DockWidgetClosable | 
+            QDockWidget.DockWidgetFeature.DockWidgetMovable | 
+            QDockWidget.DockWidgetFeature.DockWidgetFloatable
+        )
+        #dock_features = getattr(QDockWidget, 'AllDockWidgetFeatures', QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
+        self.setFeatures(dock_features)
+
+        #self.setupUi(self)
 
     def getAvailableThemes(self):
         """

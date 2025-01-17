@@ -35,6 +35,7 @@ homepage=https://github.com/mach0/themeselector
 tracker=https://github.com/mach0/themeselector/issues
 repository=https://github.com/mach0/themeselector
 icon=img/selector.png
+supportsQt6=yes
 experimental=False
 deprecated=False
 

@@ -80,7 +80,7 @@ class Selector:
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
         # Add the dock widget to QGIS interface
-        self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dockwidget)
+        self.iface.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dockwidget)
         self.dockwidget.show()
 
         # Set up the icon for the toolbar
@@ -102,7 +102,7 @@ class Selector:
 
         # Save the size of the dock widget
         settings = QSettings()
-        QSettings.setDefaultFormat(QSettings.IniFormat)
+        QSettings.setDefaultFormat(QSettings.Format.IniFormat)
         saved_size = settings.value("ThemeSelector/size", QSize(300, 200))
         if isinstance(saved_size, QSize):
             self.dockwidget.resize(saved_size)
@@ -161,7 +161,7 @@ class Selector:
         """Set combo box to the current theme."""
         theme = self.get_current_theme()
         if theme is not None:
-            index = self.dockwidget.PresetComboBox.findText(theme, Qt.MatchFixedString)
+            index = self.dockwidget.PresetComboBox.findText(theme, Qt.MatchFlag.MatchFixedString)
             self.dockwidget.PresetComboBox.setCurrentIndex(index)
 
     def get_current_theme(self):
@@ -194,7 +194,7 @@ class Selector:
 
     def set_combo_text(self, name):
         """Set combobox to the newly created theme."""
-        index = self.dockwidget.PresetComboBox.findText(name, Qt.MatchFixedString)
+        index = self.dockwidget.PresetComboBox.findText(name, Qt.MatchFlag.MatchFixedString)
         if index >= 0:
             self.dockwidget.PresetComboBox.setCurrentIndex(index)
 
@@ -224,8 +224,8 @@ class Selector:
             if map_collection.mapThemeState(existing_theme) == current_state:
                 msg = QMessageBox.warning(None, self.tr("Theme Exists"),
                                           self.tr("The theme '%1' already exists with this configuration. "
-                                                  "Do you still want to create a new theme?").replace('%1', existing_theme), QMessageBox.Yes | QMessageBox.No)
-                if msg == QMessageBox.No:
+                                                  "Do you still want to create a new theme?").replace('%1', existing_theme), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+                if msg == QMessageBox.StandardButton.No:
                     return
 
         # Ask for new theme name
