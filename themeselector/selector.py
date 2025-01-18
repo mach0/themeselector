@@ -29,6 +29,7 @@ from qgis.PyQt.QtCore import (
 )
 from qgis.PyQt.QtWidgets import (
     QInputDialog,
+    QLineEdit,
     QMessageBox
 )
 from qgis.PyQt.QtGui import QIcon
@@ -240,9 +241,10 @@ class Selector:
     def rename_maptheme(self):
         """Rename the selected theme and update map layouts."""
         theme = self.dockwidget.PresetComboBox.currentText()
-        name, ok = QInputDialog.getText(None, self.tr('Rename Theme'),
+        name, ok = QInputDialog.getText(None,
+                                        self.tr('Rename Theme'),
                                         self.tr('New Name:'),
-                                        0,
+                                        QLineEdit.EchoMode.Normal,
                                         theme)
         if ok and name != "":
             # Access the map theme collection via QgsProject instance
@@ -274,7 +276,7 @@ class Selector:
         theme = self.dockwidget.PresetComboBox.currentText()
         name, ok = QInputDialog.getText(None, self.tr('Duplicate Theme'),
                                         self.tr('Name of the new theme:'),
-                                        0,
+                                        QLineEdit.EchoMode.Normal,
                                         theme)
         if ok and name != "":
             map_collection = QgsProject.instance().mapThemeCollection()
