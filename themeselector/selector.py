@@ -82,7 +82,11 @@ class Selector:
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
         # Add the dock widget to QGIS interface
         self.iface.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dockwidget)
+        
+        # Ensure the dockwidget is always visible and activated
         self.dockwidget.show()
+        self.dockwidget.raise_()
+        self.dockwidget.activateWindow()
 
         # Set up the icon for the toolbar
         icon_path = QFileInfo(__file__).absolutePath() + '/img/selector.svg'
@@ -121,9 +125,11 @@ class Selector:
         QgsProject.instance().cleared.connect(self.clear)
         QgsProject.instance().readProject.connect(self.populate)
 
-        self.iface.mapCanvas().layersChanged.connect(self.set_combo_theme)
-        # Connect to map theme collection changes
+        # Connect to map theme collection changes only
         QgsProject.instance().mapThemeCollection().projectChanged.connect(self.populate)
+        
+        # Connect to layer changes only for button state updates (no populate)
+        self.iface.mapCanvas().layersChanged.connect(self.update_button_state)
 
         self.dockwidget.PresetComboBox.currentIndexChanged.connect(self.apply_selected_theme)
         self.dockwidget.pushButton_replace.clicked.connect(self.replace_maptheme)
@@ -138,9 +144,31 @@ class Selector:
         self.dockwidget.pushButton_up.clicked.connect(self.theme_up)
         self.dockwidget.pushButton_down.clicked.connect(self.theme_down)
 
-        # Disable buttons if no layers present
-        if len(QgsProject.instance().mapLayers()) == 0:
-            self.disable_buttons()
+        # Initial button state
+        self.update_button_state()
+
+    def update_button_state(self):
+        """Update button enabled/disabled state based on themes and layers."""
+        has_layers = bool(QgsProject.instance().mapLayers())
+        has_themes = self.dockwidget.PresetComboBox.count() > 0
+        
+        # Always enable Add button when layers are present
+        if has_layers:
+            self.dockwidget.pushButton_add.setEnabled(True)
+        else:
+            self.dockwidget.pushButton_add.setEnabled(False)
+        
+        # Enable other buttons only when both layers and themes exist
+        if has_layers and has_themes:
+            self.dockwidget.pushButton_remove.setEnabled(True)
+            self.dockwidget.pushButton_replace.setEnabled(True)
+            self.dockwidget.pushButton_rename.setEnabled(True)
+            self.dockwidget.pushButton_duplicate.setEnabled(True)
+        else:
+            self.dockwidget.pushButton_remove.setEnabled(False)
+            self.dockwidget.pushButton_replace.setEnabled(False)
+            self.dockwidget.pushButton_rename.setEnabled(False)
+            self.dockwidget.pushButton_duplicate.setEnabled(False)
 
     def clear(self):
         """Clear combobox and disable buttons."""
@@ -156,7 +184,8 @@ class Selector:
             self.dockwidget.PresetComboBox.addItem(setting)
 
         self.set_combo_theme()
-        self.enable_buttons()
+        # Update button state based on layers and themes
+        self.update_button_state()
 
     def set_combo_theme(self):
         """Set combo box to the current theme."""
