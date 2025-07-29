@@ -128,8 +128,13 @@ class Selector:
         # Connect to map theme collection changes only
         QgsProject.instance().mapThemeCollection().projectChanged.connect(self.populate)
         
-        # Connect to layer changes only for button state updates (no populate)
+        # Connect to layer changes for button state updates and theme sync checking
         self.iface.mapCanvas().layersChanged.connect(self.update_button_state)
+        
+        # Connect to layer tree changes for more comprehensive monitoring
+        QgsProject.instance().layerTreeRoot().addedChildren.connect(self.on_layer_tree_changed)
+        QgsProject.instance().layerTreeRoot().removedChildren.connect(self.on_layer_tree_changed)
+        QgsProject.instance().layerTreeRoot().visibilityChanged.connect(self.check_theme_sync)
 
         self.dockwidget.PresetComboBox.currentIndexChanged.connect(self.apply_selected_theme)
         self.dockwidget.pushButton_replace.clicked.connect(self.replace_maptheme)
@@ -145,6 +150,11 @@ class Selector:
         self.dockwidget.pushButton_down.clicked.connect(self.theme_down)
 
         # Initial button state
+        self.update_button_state()
+
+    def on_layer_tree_changed(self, parent, index_start, index_end):
+        """Handle when layers are added or removed from the layer tree."""
+        # Update button state and check theme sync when layer tree changes
         self.update_button_state()
 
     def update_button_state(self):
@@ -169,6 +179,106 @@ class Selector:
             self.dockwidget.pushButton_replace.setEnabled(False)
             self.dockwidget.pushButton_rename.setEnabled(False)
             self.dockwidget.pushButton_duplicate.setEnabled(False)
+        
+        # Check if current theme matches actual layer state and update styling
+        self.check_theme_sync()
+
+    def check_theme_sync(self):
+        """Check if the current theme matches the actual layer state and update ComboBox styling."""
+        current_theme = self.dockwidget.PresetComboBox.currentText()
+        
+        if not current_theme or not QgsProject.instance().mapLayers():
+            # Reset styling if no theme or no layers
+            self.dockwidget.PresetComboBox.setStyleSheet("")
+            return
+        
+        map_collection = QgsProject.instance().mapThemeCollection()
+        if current_theme not in map_collection.mapThemes():
+            return
+        
+        try:
+            # Get the stored theme state
+            stored_theme_state = map_collection.mapThemeState(current_theme)
+            
+            # Get the current actual state
+            root = QgsProject.instance().layerTreeRoot()
+            model = iface.layerTreeView().layerTreeModel()
+            current_state = map_collection.createThemeFromCurrentState(root, model)
+            
+            # Compare the states
+            if self.theme_states_match(stored_theme_state, current_state):
+                # Theme matches - normal styling
+                self.dockwidget.PresetComboBox.setStyleSheet("")
+            else:
+                # Theme doesn't match - red background
+                self.dockwidget.PresetComboBox.setStyleSheet(
+                    "QComboBox { background-color: #ffcccc; color: #cc0000; }"
+                )
+        except Exception as e:
+            # If there's any error, reset to normal styling
+            print(f"Error checking theme sync: {e}")
+            self.dockwidget.PresetComboBox.setStyleSheet("")
+
+    def theme_states_match(self, state1, state2):
+        """Compare two theme states to see if they match."""
+        try:
+            # Simple approach: compare the number of visible layers first
+            current_layers = QgsProject.instance().mapLayers()
+            if not current_layers:
+                return True  # No layers, consider it matching
+            
+            # Get layer records from both states
+            if hasattr(state1, 'layerRecords') and hasattr(state2, 'layerRecords'):
+                records1 = state1.layerRecords()
+                records2 = state2.layerRecords()
+                
+                # Quick check: different number of records means different states
+                if len(records1) != len(records2):
+                    return False
+                
+                # Create lookup dictionaries
+                dict1 = {}
+                dict2 = {}
+                
+                for record in records1:
+                    try:
+                        layer = record.layer()
+                        if layer and layer.isValid():
+                            dict1[layer.id()] = record
+                    except:
+                        continue
+                        
+                for record in records2:
+                    try:
+                        layer = record.layer()
+                        if layer and layer.isValid():
+                            dict2[layer.id()] = record
+                    except:
+                        continue
+                
+                # Check if same layers are present
+                if set(dict1.keys()) != set(dict2.keys()):
+                    return False
+                
+                # Compare visibility for each layer
+                for layer_id in dict1.keys():
+                    try:
+                        record1 = dict1[layer_id]
+                        record2 = dict2[layer_id]
+                        
+                        if record1.isVisible() != record2.isVisible():
+                            return False
+                    except:
+                        continue
+                
+                return True
+            
+            # Fallback: assume they match if we can't properly compare
+            return True
+            
+        except Exception as e:
+            print(f"Error comparing theme states: {e}")
+            return True  # Assume they match if we can't compare
 
     def clear(self):
         """Clear combobox and disable buttons."""
@@ -221,6 +331,8 @@ class Selector:
         root = QgsProject.instance().layerTreeRoot()
         model = iface.layerTreeView().layerTreeModel()
         QgsProject.instance().mapThemeCollection().applyTheme(theme_name, root, model)
+        # Check sync after applying theme
+        self.check_theme_sync()
 
     def set_combo_text(self, name):
         """Set combobox to the newly created theme."""
@@ -241,6 +353,8 @@ class Selector:
         model = iface.layerTreeView().layerTreeModel()
         rec = QgsProject.instance().mapThemeCollection().createThemeFromCurrentState(root, model)
         QgsProject.instance().mapThemeCollection().update(theme, rec)
+        # Check sync after updating theme
+        self.check_theme_sync()
 
     def add_maptheme(self):
         """Add a new theme."""
