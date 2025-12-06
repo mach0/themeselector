@@ -109,6 +109,8 @@ class Selector:
         """Connect all plugin signals and slots."""
         QgsProject.instance().cleared.connect(self.clear)
         QgsProject.instance().readProject.connect(self.populate)
+        QgsProject.instance().writeProject.connect(self.save_active_theme)
+        QgsProject.instance().projectSaved.connect(self.save_active_theme)
         QgsProject.instance().mapThemeCollection().projectChanged.connect(self.populate)
         QgsProject.instance().layerWillBeRemoved.connect(self._on_layer_removed)
         self.iface.mapCanvas().layersChanged.connect(self.update_button_state)
@@ -209,28 +211,36 @@ class Selector:
             return True
 
     def check_theme_sync(self) -> None:
-        """Check if current layer state matches the selected theme.
+        """Check if current layer state matches any available theme.
         
         Updates the combo box styling to indicate sync status:
-        - Normal style: layers match the theme
-        - Red background: layers have been modified
+        - Normal style: current layer state matches at least one theme
+        - Red background: current layer state doesn't match any theme
         """
-        current_theme = self.dockwidget.PresetComboBox.currentText()
         map_collection = QgsProject.instance().mapThemeCollection()
+        available_themes = map_collection.mapThemes()
         
-        if not current_theme or not QgsProject.instance().mapLayers() or current_theme not in map_collection.mapThemes():
+        if not available_themes or not QgsProject.instance().mapLayers():
             self.dockwidget.PresetComboBox.setStyleSheet("")
             return
 
         try:
             root = QgsProject.instance().layerTreeRoot()
             model = iface.layerTreeView().layerTreeModel()
-            stored_state = map_collection.mapThemeState(current_theme)
             current_state = map_collection.createThemeFromCurrentState(root, model)
 
-            if self.theme_states_match(stored_state, current_state):
+            # Check if current state matches ANY theme
+            matches_any_theme = False
+            for theme_name in available_themes:
+                stored_state = map_collection.mapThemeState(theme_name)
+                if self.theme_states_match(stored_state, current_state):
+                    matches_any_theme = True
+                    break
+            
+            if matches_any_theme:
                 self.dockwidget.PresetComboBox.setStyleSheet("")  # normal
             else:
+                # Current layer state doesn't match any saved theme
                 self.dockwidget.PresetComboBox.setStyleSheet(
                     "QComboBox { background-color: #ffcccc; color: #cc0000; }"
                 )
@@ -253,7 +263,7 @@ class Selector:
         themes = self.dockwidget.getAvailableThemes()
         for t in themes:
             self.dockwidget.PresetComboBox.addItem(t)
-        self.set_combo_theme()
+        self.restore_active_theme()
         self.update_button_state()
 
     def set_combo_theme(self) -> None:
@@ -262,6 +272,41 @@ class Selector:
         if theme:
             index = self.dockwidget.PresetComboBox.findText(theme, Qt.MatchFlag.MatchFixedString)
             self.dockwidget.PresetComboBox.setCurrentIndex(index)
+    
+    def save_active_theme(self) -> None:
+        """Save the currently active theme to project settings.
+        
+        This allows the plugin to restore the same theme when the project
+        is reopened.
+        """
+        current_theme = self.get_current_theme()
+        if current_theme:
+            QgsProject.instance().writeEntry('ThemeSelector', 'activeTheme', current_theme)
+            self.log(f"Saved active theme: {current_theme}", Qgis.Info)
+    
+    def restore_active_theme(self) -> None:
+        """Restore the previously active theme from project settings.
+        
+        If a theme was saved when the project was last closed, this will
+        reactivate it automatically.
+        """
+        saved_theme, ok = QgsProject.instance().readEntry('ThemeSelector', 'activeTheme', '')
+        
+        if ok and saved_theme:
+            # Check if the saved theme still exists
+            available_themes = self.dockwidget.getAvailableThemes()
+            if saved_theme in available_themes:
+                self.set_combo_text(saved_theme)
+                self.log(f"Restored active theme: {saved_theme}", Qgis.Info)
+            else:
+                self.log(f"Saved theme '{saved_theme}' no longer exists", Qgis.Warning)
+                # Fall back to first theme if available
+                if available_themes:
+                    self.dockwidget.PresetComboBox.setCurrentIndex(0)
+        else:
+            # No saved theme, just select the first one if available
+            if self.dockwidget.PresetComboBox.count() > 0:
+                self.dockwidget.PresetComboBox.setCurrentIndex(0)
 
     def get_current_theme(self) -> str:
         """Get the currently selected theme name.
@@ -293,6 +338,8 @@ class Selector:
         model = iface.layerTreeView().layerTreeModel()
         QgsProject.instance().mapThemeCollection().applyTheme(theme_name, root, model)
         self.check_theme_sync()
+        # Save the active theme so it can be restored later
+        self.save_active_theme()
 
     def set_combo_text(self, name: str) -> None:
         """Set the combo box to a specific theme by name.
