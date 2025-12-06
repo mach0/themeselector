@@ -25,6 +25,20 @@ from qgis.gui import QgsNewNameDialog
 
 from .selector_dockwidget import SelectorDockWidget
 
+# Qt5/Qt6 compatibility: handle different enum syntax
+# Qt5: Qt.CaseSensitive, Qt.MatchFixedString, Qt.LeftDockWidgetArea
+# Qt6: Qt.CaseSensitivity.CaseSensitive, Qt.MatchFlag.MatchFixedString, Qt.DockWidgetArea.LeftDockWidgetArea
+if hasattr(Qt, 'CaseSensitivity'):
+    # Qt6
+    CASE_SENSITIVE = Qt.CaseSensitivity.CaseSensitive
+    MATCH_FIXED_STRING = Qt.MatchFlag.MatchFixedString
+    LEFT_DOCK_WIDGET_AREA = Qt.DockWidgetArea.LeftDockWidgetArea
+else:
+    # Qt5
+    CASE_SENSITIVE = Qt.CaseSensitive
+    MATCH_FIXED_STRING = Qt.MatchFixedString
+    LEFT_DOCK_WIDGET_AREA = Qt.LeftDockWidgetArea
+
 
 class Selector:
     """QGIS Plugin Implementation for Theme Selection and Management.
@@ -83,7 +97,7 @@ class Selector:
     # -------------------
     def initGui(self) -> None:
         """Initialize the plugin GUI."""
-        self.iface.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dockwidget)
+        self.iface.addDockWidget(LEFT_DOCK_WIDGET_AREA, self.dockwidget)
         self.dockwidget.show()
         self.dockwidget.raise_()
         self.dockwidget.activateWindow()
@@ -270,7 +284,7 @@ class Selector:
         """Set the combo box to display the current theme."""
         theme = self.get_current_theme()
         if theme:
-            index = self.dockwidget.PresetComboBox.findText(theme, Qt.MatchFlag.MatchFixedString)
+            index = self.dockwidget.PresetComboBox.findText(theme, MATCH_FIXED_STRING)
             self.dockwidget.PresetComboBox.setCurrentIndex(index)
     
     def get_current_theme(self) -> str:
@@ -310,7 +324,7 @@ class Selector:
         Args:
             name: Theme name to select
         """
-        index = self.dockwidget.PresetComboBox.findText(name, Qt.MatchFlag.MatchFixedString)
+        index = self.dockwidget.PresetComboBox.findText(name, MATCH_FIXED_STRING)
         if index >= 0:
             self.dockwidget.PresetComboBox.setCurrentIndex(index)
 
@@ -328,7 +342,7 @@ class Selector:
         Returns:
             New theme name if user confirmed, None if cancelled
         """
-        dlg = QgsNewNameDialog('', initial, [], existing, Qt.CaseSensitive, self.iface.mainWindow())
+        dlg = QgsNewNameDialog('', initial, [], existing, CASE_SENSITIVE, self.iface.mainWindow())
         dlg.setWindowTitle(title)
         dlg.setAllowEmptyName(False)
         if dlg.exec():
