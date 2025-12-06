@@ -15,6 +15,7 @@ email=werner.macho@gmail.com
 
 ; optional metadata entries
 changelog=
+    4.0.1 more optimization on handling
     4.0.0 working with QGIS4 overhaul algorithms
     3.3.6 update main application on change
     3.3.5 Make Translation files work again
