@@ -4,63 +4,49 @@ ThemeSelector
 
 A QGIS plugin
 This plugin brings the layer theme settings directly to the desktop
-
-    begin                : 2017-07-13
-    git sha              : $Format:%H$
-    copyright            : (C) 2017 by Werner Macho
-    email                : werner.macho@gmail.com
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
 """
 # pylint: disable = no-name-in-module
 
 import os
+from typing import Optional, List, Tuple
+
 from qgis.utils import iface
-from qgis.PyQt.QtCore import (
-    QSettings,
-    QTranslator,
-    QCoreApplication,
-    QFileInfo,
-    Qt,
-    QSize
-)
-from qgis.PyQt.QtWidgets import (
-    QInputDialog,
-    QLineEdit,
-    QMessageBox
-)
+from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, QFileInfo, Qt, QSize
+from qgis.PyQt.QtWidgets import QMessageBox
 from qgis.PyQt.QtGui import QIcon
-from qgis.core import QgsProject, QgsLayoutItemMap
+from qgis.core import (
+    QgsProject,
+    QgsLayoutItemMap,
+    QgsMapThemeCollection,
+    QgsMessageLog,
+    Qgis
+)
+from qgis.gui import QgsNewNameDialog
 
-
-# Import the code for the DockWidget
 from .selector_dockwidget import SelectorDockWidget
 
 
 class Selector:
-    """QGIS Plugin Implementation.
+    """QGIS Plugin Implementation for Theme Selection and Management.
+    
+    This plugin provides a dockable widget for managing QGIS map themes,
+    allowing users to create, rename, duplicate, and switch between themes.
     """
 
-    def __init__(self, iface):
-        """Constructor."""
-        # Save reference to the QGIS interface
+    def __init__(self, iface) -> None:
+        """Initialize the plugin.
+        
+        Args:
+            iface: QGIS interface instance
+        """
         self.iface = iface
-
-        # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
+        self._connected_layers = set()  # Track layers with connected signals
 
-        # initialize locale
+        # Locale
         locale = QSettings().value('locale/userLocale')[0:2]
-        locale_path = os.path.join(
-            self.plugin_dir,
-            'i18n',
-            f'{locale}.qm')
-
-        print(f"Detected locale: {locale}")
-
+        locale_path = os.path.join(self.plugin_dir, 'i18n', f'{locale}.qm')
+        self.log(f"Detected locale: {locale}", Qgis.Info)
         if os.path.exists(locale_path):
             self.translator = QTranslator()
             self.translator.load(locale_path)
@@ -69,72 +55,68 @@ class Selector:
         self.dockwidget = SelectorDockWidget()
         self.action = self.dockwidget.toggleViewAction()
 
-        # Remember size of the dockwidget
         settings = QSettings()
-        self.dockwidget.resize(settings.value("ThemeSelector/size",
-                                              QSize(300, 200)))
+        self.dockwidget.resize(settings.value("ThemeSelector/size", QSize(300, 200)))
 
-    def tr(self, message):
-        """Get the translation for a string using Qt translation API."""
-        return QCoreApplication.translate('Selector', message)
-
-    def initGui(self):
-        """Create the menu entries and toolbar icons inside the QGIS GUI."""
-        # Add the dock widget to QGIS interface
-        self.iface.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dockwidget)
+    def tr(self, message: str) -> str:
+        """Translate a message using Qt translation system.
         
-        # Ensure the dockwidget is always visible and activated
+        Args:
+            message: String to translate
+            
+        Returns:
+            Translated string
+        """
+        return QCoreApplication.translate('Selector', message)
+    
+    def log(self, message: str, level: Qgis.MessageLevel = Qgis.Warning) -> None:
+        """Log a message to QGIS message log.
+        
+        Args:
+            message: Message to log
+            level: Message level (Info, Warning, Critical)
+        """
+        QgsMessageLog.logMessage(message, 'ThemeSelector', level)
+
+    # -------------------
+    # GUI Setup
+    # -------------------
+    def initGui(self) -> None:
+        """Initialize the plugin GUI."""
+        self.iface.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dockwidget)
         self.dockwidget.show()
         self.dockwidget.raise_()
         self.dockwidget.activateWindow()
 
-        # Set up the icon for the toolbar
         icon_path = QFileInfo(__file__).absolutePath() + '/img/selector.svg'
         self.action.setIcon(QIcon(icon_path))
         self.action.setText(self.tr('Theme&Selector'))
-
-        # Add the toolbar icon to the QGIS toolbar
         self.iface.addToolBarIcon(self.action)
 
-        # Initialize widget functionality
         self.populate()
         self.connect_signals()
 
-    def unload(self):
-        """Removes the plugin menu item and icon from QGIS GUI."""
+    def unload(self) -> None:
+        """Clean up plugin resources and save settings."""
         self.iface.removeToolBarIcon(self.action)
         self.iface.removeDockWidget(self.dockwidget)
 
-        # Save the size of the dock widget
-        settings = QSettings()
-        QSettings.setDefaultFormat(QSettings.Format.IniFormat)
-        saved_size = settings.value("ThemeSelector/size", QSize(300, 200))
-        if isinstance(saved_size, QSize):
-            self.dockwidget.resize(saved_size)
-        elif isinstance(saved_size, str):  # Handle improperly serialized values
-            try:
-                width, height = map(int, saved_size.strip("()").split(","))
-                self.dockwidget.resize(QSize(width, height))
-            except ValueError:
-                self.dockwidget.resize(QSize(300, 200))  # Default size
+        # Save widget size
         settings = QSettings()
         settings.setValue("ThemeSelector/size", self.dockwidget.size())
 
-    def connect_signals(self):
-        """Connect various signals and slots."""
+    def connect_signals(self) -> None:
+        """Connect all plugin signals and slots."""
         QgsProject.instance().cleared.connect(self.clear)
         QgsProject.instance().readProject.connect(self.populate)
-
-        # Connect to map theme collection changes only
         QgsProject.instance().mapThemeCollection().projectChanged.connect(self.populate)
-        
-        # Connect to layer changes for button state updates and theme sync checking
+        QgsProject.instance().layerWillBeRemoved.connect(self._on_layer_removed)
         self.iface.mapCanvas().layersChanged.connect(self.update_button_state)
-        
-        # Connect to layer tree changes for more comprehensive monitoring
-        QgsProject.instance().layerTreeRoot().addedChildren.connect(self.on_layer_tree_changed)
-        QgsProject.instance().layerTreeRoot().removedChildren.connect(self.on_layer_tree_changed)
-        QgsProject.instance().layerTreeRoot().visibilityChanged.connect(self.check_theme_sync)
+
+        root = QgsProject.instance().layerTreeRoot()
+        root.addedChildren.connect(self.on_layer_tree_changed)
+        root.removedChildren.connect(self.on_layer_tree_changed)
+        root.visibilityChanged.connect(self.check_theme_sync)
 
         self.dockwidget.PresetComboBox.currentIndexChanged.connect(self.apply_selected_theme)
         self.dockwidget.pushButton_replace.clicked.connect(self.replace_maptheme)
@@ -143,303 +125,298 @@ class Selector:
         self.dockwidget.pushButton_rename.clicked.connect(self.rename_maptheme)
         self.dockwidget.pushButton_duplicate.clicked.connect(self.duplicate_maptheme)
 
-        # Set button icons
         self.dockwidget.pushButton_up.setIcon(QIcon(QFileInfo(__file__).absolutePath() + '/img/mActionArrowLeft.svg'))
         self.dockwidget.pushButton_down.setIcon(QIcon(QFileInfo(__file__).absolutePath() + '/img/mActionArrowRight.svg'))
         self.dockwidget.pushButton_up.clicked.connect(self.theme_up)
         self.dockwidget.pushButton_down.clicked.connect(self.theme_down)
 
-        # Initial button state
+        self.update_button_state()
+    
+    def _on_layer_removed(self, layer_id: str) -> None:
+        """Handle layer removal to clean up signal connections.
+        
+        Args:
+            layer_id: ID of the layer being removed
+        """
+        self._connected_layers.discard(layer_id)
+
+    # -------------------
+    # Layer / Theme Updates
+    # -------------------
+    def on_layer_tree_changed(self, parent, start, end) -> None:
+        """Handle layer tree changes.
+        
+        Args:
+            parent: Parent node
+            start: Start index
+            end: End index
+        """
         self.update_button_state()
 
-    def on_layer_tree_changed(self, parent, index_start, index_end):
-        """Handle when layers are added or removed from the layer tree."""
-        # Update button state and check theme sync when layer tree changes
-        self.update_button_state()
-
-    def update_button_state(self):
-        """Update button enabled/disabled state based on themes and layers."""
+    def update_button_state(self) -> None:
+        """Update button enabled/disabled state based on project state."""
         has_layers = bool(QgsProject.instance().mapLayers())
         has_themes = self.dockwidget.PresetComboBox.count() > 0
-        
-        # Always enable Add button when layers are present
-        if has_layers:
-            self.dockwidget.pushButton_add.setEnabled(True)
-        else:
-            self.dockwidget.pushButton_add.setEnabled(False)
-        
-        # Enable other buttons only when both layers and themes exist
-        if has_layers and has_themes:
-            self.dockwidget.pushButton_remove.setEnabled(True)
-            self.dockwidget.pushButton_replace.setEnabled(True)
-            self.dockwidget.pushButton_rename.setEnabled(True)
-            self.dockwidget.pushButton_duplicate.setEnabled(True)
-        else:
-            self.dockwidget.pushButton_remove.setEnabled(False)
-            self.dockwidget.pushButton_replace.setEnabled(False)
-            self.dockwidget.pushButton_rename.setEnabled(False)
-            self.dockwidget.pushButton_duplicate.setEnabled(False)
-        
-        # Check if current theme matches actual layer state and update styling
+
+        self.dockwidget.pushButton_add.setEnabled(has_layers)
+        enabled = has_layers and has_themes
+        self.dockwidget.pushButton_remove.setEnabled(enabled)
+        self.dockwidget.pushButton_replace.setEnabled(enabled)
+        self.dockwidget.pushButton_rename.setEnabled(enabled)
+        self.dockwidget.pushButton_duplicate.setEnabled(enabled)
+
+        # Connect styleChanged signals only for new layers
+        for layer_id, layer in QgsProject.instance().mapLayers().items():
+            if layer_id not in self._connected_layers:
+                try:
+                    layer.styleChanged.connect(self.check_theme_sync)
+                    self._connected_layers.add(layer_id)
+                except (AttributeError, RuntimeError) as e:
+                    self.log(f"Could not connect to layer {layer_id}: {e}", Qgis.Warning)
+
         self.check_theme_sync()
 
-    def check_theme_sync(self):
-        """Check if the current theme matches the actual layer state and update ComboBox styling."""
-        current_theme = self.dockwidget.PresetComboBox.currentText()
+    # -------------------
+    # Theme State Comparison
+    # -------------------
+    def theme_states_match(self, state1: QgsMapThemeCollection.MapThemeRecord, 
+                          state2: QgsMapThemeCollection.MapThemeRecord) -> bool:
+        """Compare two theme states for equality.
         
-        if not current_theme or not QgsProject.instance().mapLayers():
-            # Reset styling if no theme or no layers
+        Args:
+            state1: First theme state
+            state2: Second theme state
+            
+        Returns:
+            True if states match, False otherwise
+        """
+        try:
+            def get_layers(state):
+                if not hasattr(state, 'layerRecords'):
+                    return []
+                # List of tuples (layer_id, visibility) in order
+                result = []
+                for r in state.layerRecords():
+                    if r.layer() and r.layer().isValid():
+                        # QGIS 4: isVisible is a property, QGIS 3: isVisible() is a method
+                        visibility = r.isVisible if isinstance(r.isVisible, bool) else r.isVisible()
+                        result.append((r.layer().id(), visibility))
+                return result
+
+            return get_layers(state1) == get_layers(state2)
+        except (AttributeError, RuntimeError) as e:
+            self.log(f"Error comparing theme states: {e}", Qgis.Warning)
+            return True
+
+    def check_theme_sync(self) -> None:
+        """Check if current layer state matches the selected theme.
+        
+        Updates the combo box styling to indicate sync status:
+        - Normal style: layers match the theme
+        - Red background: layers have been modified
+        """
+        current_theme = self.dockwidget.PresetComboBox.currentText()
+        map_collection = QgsProject.instance().mapThemeCollection()
+        
+        if not current_theme or not QgsProject.instance().mapLayers() or current_theme not in map_collection.mapThemes():
             self.dockwidget.PresetComboBox.setStyleSheet("")
             return
-        
-        map_collection = QgsProject.instance().mapThemeCollection()
-        if current_theme not in map_collection.mapThemes():
-            return
-        
+
         try:
-            # Get the stored theme state
-            stored_theme_state = map_collection.mapThemeState(current_theme)
-            
-            # Get the current actual state
             root = QgsProject.instance().layerTreeRoot()
             model = iface.layerTreeView().layerTreeModel()
+            stored_state = map_collection.mapThemeState(current_theme)
             current_state = map_collection.createThemeFromCurrentState(root, model)
-            
-            # Compare the states
-            if self.theme_states_match(stored_theme_state, current_state):
-                # Theme matches - normal styling
-                self.dockwidget.PresetComboBox.setStyleSheet("")
+
+            if self.theme_states_match(stored_state, current_state):
+                self.dockwidget.PresetComboBox.setStyleSheet("")  # normal
             else:
-                # Theme doesn't match - red background
                 self.dockwidget.PresetComboBox.setStyleSheet(
                     "QComboBox { background-color: #ffcccc; color: #cc0000; }"
                 )
-        except Exception as e:
-            # If there's any error, reset to normal styling
-            print(f"Error checking theme sync: {e}")
+        except (AttributeError, RuntimeError) as e:
+            self.log(f"Error checking theme sync: {e}", Qgis.Warning)
             self.dockwidget.PresetComboBox.setStyleSheet("")
 
-    def theme_states_match(self, state1, state2):
-        """Compare two theme states to see if they match."""
-        try:
-            # Simple approach: compare the number of visible layers first
-            current_layers = QgsProject.instance().mapLayers()
-            if not current_layers:
-                return True  # No layers, consider it matching
-            
-            # Get layer records from both states
-            if hasattr(state1, 'layerRecords') and hasattr(state2, 'layerRecords'):
-                records1 = state1.layerRecords()
-                records2 = state2.layerRecords()
-                
-                # Quick check: different number of records means different states
-                if len(records1) != len(records2):
-                    return False
-                
-                # Create lookup dictionaries
-                dict1 = {}
-                dict2 = {}
-                
-                for record in records1:
-                    try:
-                        layer = record.layer()
-                        if layer and layer.isValid():
-                            dict1[layer.id()] = record
-                    except:
-                        continue
-                        
-                for record in records2:
-                    try:
-                        layer = record.layer()
-                        if layer and layer.isValid():
-                            dict2[layer.id()] = record
-                    except:
-                        continue
-                
-                # Check if same layers are present
-                if set(dict1.keys()) != set(dict2.keys()):
-                    return False
-                
-                # Compare visibility for each layer
-                for layer_id in dict1.keys():
-                    try:
-                        record1 = dict1[layer_id]
-                        record2 = dict2[layer_id]
-                        
-                        if record1.isVisible() != record2.isVisible():
-                            return False
-                    except:
-                        continue
-                
-                return True
-            
-            # Fallback: assume they match if we can't properly compare
-            return True
-            
-        except Exception as e:
-            print(f"Error comparing theme states: {e}")
-            return True  # Assume they match if we can't compare
-
-    def clear(self):
-        """Clear combobox and disable buttons."""
+    # -------------------
+    # ComboBox / Populate
+    # -------------------
+    def clear(self) -> None:
+        """Clear the theme combo box and disable buttons."""
         self.dockwidget.PresetComboBox.clear()
-        self.disable_buttons()
+        self._connected_layers.clear()
+        self.set_buttons_enabled(False)
 
-    def populate(self):
-        """Populate combobox with available themes."""
+    def populate(self) -> None:
+        """Populate the theme combo box with available themes."""
         self.clear()
         themes = self.dockwidget.getAvailableThemes()
-
-        for setting in themes:
-            self.dockwidget.PresetComboBox.addItem(setting)
-
+        for t in themes:
+            self.dockwidget.PresetComboBox.addItem(t)
         self.set_combo_theme()
-        # Update button state based on layers and themes
         self.update_button_state()
 
-    def set_combo_theme(self):
-        """Set combo box to the current theme."""
+    def set_combo_theme(self) -> None:
+        """Set the combo box to display the current theme."""
         theme = self.get_current_theme()
-        if theme is not None:
+        if theme:
             index = self.dockwidget.PresetComboBox.findText(theme, Qt.MatchFlag.MatchFixedString)
             self.dockwidget.PresetComboBox.setCurrentIndex(index)
 
-    def get_current_theme(self):
-        """Retrieve the currently selected theme by name."""
+    def get_current_theme(self) -> str:
+        """Get the currently selected theme name.
+        
+        Returns:
+            Name of the currently selected theme
+        """
         return self.dockwidget.PresetComboBox.currentText()
 
-    def theme_up(self):
-        """Move to the previous theme based on the index in the combobox."""
+    def theme_up(self) -> None:
+        """Navigate to the previous theme in the list."""
         index = self.dockwidget.PresetComboBox.currentIndex()
         if index > 0:
-            # Move to the previous theme by decreasing index
             self.dockwidget.PresetComboBox.setCurrentIndex(index - 1)
-            self.apply_selected_theme()  
+            self.apply_selected_theme()
 
-    def theme_down(self):
-        """Move to the next theme based on the index in the combobox."""
-        maximum = self.dockwidget.PresetComboBox.count()  # Total number of themes
+    def theme_down(self) -> None:
+        """Navigate to the next theme in the list."""
         index = self.dockwidget.PresetComboBox.currentIndex()
+        maximum = self.dockwidget.PresetComboBox.count()
         if index < maximum - 1:
-            # Move to the next theme by increasing index
             self.dockwidget.PresetComboBox.setCurrentIndex(index + 1)
-            self.apply_selected_theme()  
+            self.apply_selected_theme()
 
-    def apply_selected_theme(self):
-        """Apply the selected theme based on the current combobox selection."""
-        theme_name = self.dockwidget.PresetComboBox.currentText()
+    def apply_selected_theme(self) -> None:
+        """Apply the currently selected theme to the map canvas."""
+        theme_name = self.get_current_theme()
         root = QgsProject.instance().layerTreeRoot()
         model = iface.layerTreeView().layerTreeModel()
         QgsProject.instance().mapThemeCollection().applyTheme(theme_name, root, model)
-        # Check sync after applying theme
         self.check_theme_sync()
 
-    def set_combo_text(self, name):
-        """Set combobox to the newly created theme."""
+    def set_combo_text(self, name: str) -> None:
+        """Set the combo box to a specific theme by name.
+        
+        Args:
+            name: Theme name to select
+        """
         index = self.dockwidget.PresetComboBox.findText(name, Qt.MatchFlag.MatchFixedString)
         if index >= 0:
             self.dockwidget.PresetComboBox.setCurrentIndex(index)
 
-    def remove_maptheme(self):
-        """Remove the selected theme."""
-        theme = self.dockwidget.PresetComboBox.currentText()
-        QgsProject.instance().mapThemeCollection().removeMapTheme(theme)
-        self.populate()
+    # -------------------
+    # Theme Name Dialog Helper
+    # -------------------
+    def get_new_theme_name(self, title: str, initial: str, existing: List[str]) -> Optional[str]:
+        """Show dialog to get a new theme name from user.
+        
+        Args:
+            title: Dialog window title
+            initial: Initial/default name to show
+            existing: List of existing theme names to prevent duplicates
+            
+        Returns:
+            New theme name if user confirmed, None if cancelled
+        """
+        dlg = QgsNewNameDialog('', initial, [], existing, Qt.CaseSensitive, self.iface.mainWindow())
+        dlg.setWindowTitle(title)
+        dlg.setAllowEmptyName(False)
+        if dlg.exec():
+            name = dlg.name().strip()
+            return name if name else None
+        return None
 
-    def replace_maptheme(self):
-        """Replace the current theme with a new one."""
-        theme = self.dockwidget.PresetComboBox.currentText()
-        root = QgsProject.instance().layerTreeRoot()
-        model = iface.layerTreeView().layerTreeModel()
-        rec = QgsProject.instance().mapThemeCollection().createThemeFromCurrentState(root, model)
-        QgsProject.instance().mapThemeCollection().update(theme, rec)
-        # Check sync after updating theme
-        self.check_theme_sync()
-
-    def add_maptheme(self):
-        """Add a new theme."""
+    # -------------------
+    # Generic Theme Operations
+    # -------------------
+    def create_or_copy_theme(self, operation: str, source_theme: Optional[str] = None, 
+                            initial_name: str = "") -> None:
+        """Generic method for creating, renaming, or duplicating themes.
+        
+        Args:
+            operation: Operation type ('add', 'rename', or 'duplicate')
+            source_theme: Source theme name for rename/duplicate operations
+            initial_name: Initial name to suggest in the dialog
+        """
         map_collection = QgsProject.instance().mapThemeCollection()
         root = QgsProject.instance().layerTreeRoot()
         model = iface.layerTreeView().layerTreeModel()
 
-        # Check if the current state already exists
-        current_state = map_collection.createThemeFromCurrentState(root, model)
-        for existing_theme in map_collection.mapThemes():
-            if map_collection.mapThemeState(existing_theme) == current_state:
-                msg = QMessageBox.warning(None, self.tr("Theme Exists"),
-                                          self.tr("The theme '%1' already exists with this configuration. "
-                                                  "Do you still want to create a new theme?").replace('%1', existing_theme), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-                if msg == QMessageBox.StandardButton.No:
-                    return
+        existing = map_collection.mapThemes()
+        if operation == "rename" and source_theme:
+            existing = [t for t in existing if t != source_theme]
 
-        # Ask for new theme name
-        name, ok = QInputDialog.getText(None, self.tr('Themename'), self.tr('Name of the new theme'))
-        if ok and name != "":
-            rec = map_collection.createThemeFromCurrentState(root, model)
-            map_collection.insert(name, rec)
-            self.populate()
-            map_collection.applyTheme(name, root, model)
-            self.set_combo_text(name)
+        name = self.get_new_theme_name(
+            title=self.tr(f"{operation.capitalize()} Theme"),
+            initial=initial_name,
+            existing=existing
+        )
+        if not name:
+            return
 
-    def rename_maptheme(self):
-        """Rename the selected theme and update map layouts."""
-        theme = self.dockwidget.PresetComboBox.currentText()
-        name, ok = QInputDialog.getText(None,
-                                        self.tr('Rename Theme'),
-                                        self.tr('New Name:'),
-                                        QLineEdit.EchoMode.Normal,
-                                        theme)
-        if ok and name != "":
-            # Access the map theme collection via QgsProject instance
-            map_collection = QgsProject.instance().mapThemeCollection()
-
-            # Ensure the theme exists in the collection before renaming
-            if theme in map_collection.mapThemes():
-                # Rename the theme in the map theme collection
-                map_collection.renameMapTheme(theme, name)
-
-                # Apply the newly renamed theme to all layouts
-                layout_manager = QgsProject.instance().layoutManager()
-                for layout in layout_manager.layouts():
-                    for item in layout.items():
-                        if isinstance(item, QgsLayoutItemMap):
-                            # Refresh the map item
-                            item.refresh()
-                            print(f"Refreshed map item in layout '{layout.name()}' for map item.")
-
-                # Repopulate the combobox and set the selected theme
-                self.populate()
-                self.set_combo_text(name)
-            else:
-                QMessageBox.warning(None, self.tr("Theme Not Found"),
-                                    self.tr("The theme '%1' was not found in the map theme collection.").replace('%1', theme))
-
-    def duplicate_maptheme(self):
-        """Duplicate the selected theme."""
-        theme = self.dockwidget.PresetComboBox.currentText()
-        name, ok = QInputDialog.getText(None, self.tr('Duplicate Theme'),
-                                        self.tr('Name of the new theme:'),
-                                        QLineEdit.EchoMode.Normal,
-                                        theme)
-        if ok and name != "":
-            map_collection = QgsProject.instance().mapThemeCollection()
-            state = map_collection.mapThemeState(theme)
+        if operation == "add":
+            state = map_collection.createThemeFromCurrentState(root, model)
             map_collection.insert(name, state)
-            self.populate()
-            self.set_combo_text(name)
+            map_collection.applyTheme(name, root, model)
 
-    def disable_buttons(self):
-        """Disable theme buttons."""
-        self.dockwidget.pushButton_remove.setEnabled(False)
-        self.dockwidget.pushButton_replace.setEnabled(False)
-        self.dockwidget.pushButton_add.setEnabled(False)
-        self.dockwidget.pushButton_rename.setEnabled(False)
-        self.dockwidget.pushButton_duplicate.setEnabled(False)
+        elif operation == "rename" and source_theme:
+            map_collection.renameMapTheme(source_theme, name)
+            layout_manager = QgsProject.instance().layoutManager()
+            for layout in layout_manager.layouts():
+                for item in layout.items():
+                    if isinstance(item, QgsLayoutItemMap):
+                        item.refresh()
 
-    def enable_buttons(self):
-        """Enable theme buttons."""
-        self.dockwidget.pushButton_remove.setEnabled(True)
-        self.dockwidget.pushButton_replace.setEnabled(True)
-        self.dockwidget.pushButton_add.setEnabled(True)
-        self.dockwidget.pushButton_rename.setEnabled(True)
-        self.dockwidget.pushButton_duplicate.setEnabled(True)
+        elif operation == "duplicate" and source_theme:
+            state = map_collection.mapThemeState(source_theme)
+            map_collection.insert(name, state)
+
+        self.populate()
+        self.set_combo_text(name)
+
+    # -------------------
+    # Theme Methods Using Generic Helper
+    # -------------------
+    def add_maptheme(self) -> None:
+        """Create a new theme from the current layer state."""
+        self.create_or_copy_theme(operation="add", initial_name="")
+
+    def rename_maptheme(self) -> None:
+        """Rename the currently selected theme."""
+        old_name = self.get_current_theme()
+        self.create_or_copy_theme(operation="rename", source_theme=old_name, initial_name=old_name)
+
+    def duplicate_maptheme(self) -> None:
+        """Duplicate the currently selected theme."""
+        theme = self.get_current_theme()
+        self.create_or_copy_theme(operation="duplicate", source_theme=theme, initial_name=f"{theme}_copy")
+
+    def remove_maptheme(self) -> None:
+        """Remove the currently selected theme."""
+        theme = self.get_current_theme()
+        QgsProject.instance().mapThemeCollection().removeMapTheme(theme)
+        self.populate()
+
+    def replace_maptheme(self) -> None:
+        """Replace the currently selected theme with the current layer state."""
+        theme = self.get_current_theme()
+        root = QgsProject.instance().layerTreeRoot()
+        model = iface.layerTreeView().layerTreeModel()
+        rec = QgsProject.instance().mapThemeCollection().createThemeFromCurrentState(root, model)
+        QgsProject.instance().mapThemeCollection().update(theme, rec)
+        self.check_theme_sync()
+
+    # -------------------
+    # Button Helpers
+    # -------------------
+    def set_buttons_enabled(self, enabled: bool) -> None:
+        """Set the enabled state of all theme operation buttons.
+        
+        Args:
+            enabled: True to enable buttons, False to disable
+        """
+        self.dockwidget.pushButton_remove.setEnabled(enabled)
+        self.dockwidget.pushButton_replace.setEnabled(enabled)
+        self.dockwidget.pushButton_add.setEnabled(enabled)
+        self.dockwidget.pushButton_rename.setEnabled(enabled)
+        self.dockwidget.pushButton_duplicate.setEnabled(enabled)

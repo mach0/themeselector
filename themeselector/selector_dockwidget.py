@@ -10,25 +10,33 @@
         email                : werner.macho@gmail.com
 
  This program is free software; you can redistribute it and/or modify
- t under the terms of the GNU General Public License as published by
+ it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 """
 # pylint: disable = no-name-in-module
 
 import os
-from qgis.PyQt import uic
-#from PyQt6.uic import loadUi
-from qgis.PyQt.QtWidgets import QDockWidget
-from qgis.core import QgsProject
+from typing import Optional, List
 
-# Load the UI file dynamically using uic
-#FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__),
-#                                            'selector_dockwidget_base.ui'))
+from qgis.PyQt import uic
+from qgis.PyQt.QtWidgets import QDockWidget, QWidget
+from qgis.core import QgsProject
 
 
 class SelectorDockWidget(QDockWidget):
-    def __init__(self, parent=None):
+    """Dockable widget for theme selection and management.
+    
+    This widget provides a user interface for selecting and managing
+    QGIS map themes directly from the QGIS desktop.
+    """
+    
+    def __init__(self, parent: Optional[QWidget] = None) -> None:
+        """Initialize the dock widget.
+        
+        Args:
+            parent: Optional parent widget
+        """
         super().__init__(parent)
 
         # Construct the path to the UI file dynamically
@@ -43,17 +51,12 @@ class SelectorDockWidget(QDockWidget):
             QDockWidget.DockWidgetFeature.DockWidgetMovable | 
             QDockWidget.DockWidgetFeature.DockWidgetFloatable
         )
-        #dock_features = getattr(QDockWidget, 'AllDockWidgetFeatures', QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
         self.setFeatures(dock_features)
 
-        #self.setupUi(self)
-
-    def getAvailableThemes(self):
-        """
-        Retrieve and return the available map themes from the current
-        QGIS project.
+    def getAvailableThemes(self) -> List[str]:
+        """Retrieve and return the available map themes from the current QGIS project.
 
         Returns:
-            list: A list of available theme names.
+            List of available theme names
         """
         return QgsProject.instance().mapThemeCollection().mapThemes()
