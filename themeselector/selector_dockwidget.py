@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
  SelectorDockWidget
 
@@ -15,46 +14,42 @@
  (at your option) any later version.
 """
 # pylint: disable = no-name-in-module
+from __future__ import annotations
 
 import os
-from typing import Optional, List
 
+from qgis.core import QgsProject
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QDockWidget, QWidget
-from qgis.core import QgsProject
+
+from .compat import DOCK_WIDGET_FEATURES
 
 
 class SelectorDockWidget(QDockWidget):
     """Dockable widget for theme selection and management.
-    
+
     This widget provides a user interface for selecting and managing
     QGIS map themes directly from the QGIS desktop.
     """
-    
-    def __init__(self, parent: Optional[QWidget] = None) -> None:
+
+    def __init__(self, parent: QWidget | None = None) -> None:
         """Initialize the dock widget.
-        
+
         Args:
             parent: Optional parent widget
         """
         super().__init__(parent)
 
         # Construct the path to the UI file dynamically
-        ui_path = os.path.join(os.path.dirname(__file__), 'selector_dockwidget_base.ui')
+        base_dir = os.path.dirname(__file__)
+        ui_path = os.path.join(base_dir, 'selector_dockwidget_base.ui')
         uic.loadUi(ui_path, self)
 
         # Set dock widget features
-        dock_features = getattr(
-            QDockWidget,
-            'AllDockWidgetFeatures',
-            QDockWidget.DockWidgetFeature.DockWidgetClosable | 
-            QDockWidget.DockWidgetFeature.DockWidgetMovable | 
-            QDockWidget.DockWidgetFeature.DockWidgetFloatable
-        )
-        self.setFeatures(dock_features)
+        self.setFeatures(DOCK_WIDGET_FEATURES)
 
-    def getAvailableThemes(self) -> List[str]:
-        """Retrieve and return the available map themes from the current QGIS project.
+    def getAvailableThemes(self) -> list[str]:
+        """Retrieve and return available map themes from the QGIS project.
 
         Returns:
             List of available theme names

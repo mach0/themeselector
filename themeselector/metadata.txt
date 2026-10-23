@@ -9,13 +9,13 @@ about=Take saved themes and apply them with a selection by dropdown.
 about[de]=Das Plugin stellt im Projekt gespeicherte Themen über ein Dropdown-Fenster zur Verfügung.
 
 category=Plugins
-version=4.0.0
+version=4.0.1
 author=Werner Macho für Wagner-IT
 email=werner.macho@gmail.com
 
 ; optional metadata entries
 changelog=
-    4.0.1 more optimization on handling
+    4.0.1 more optimization on handling, Qt5/Qt6 compatibility, bugfixes and translation updates
     4.0.0 working with QGIS4 overhaul algorithms
     3.3.6 update main application on change
     3.3.5 Make Translation files work again
@@ -32,7 +32,7 @@ changelog=
     0.3 fix translation
     0.1 initial version
 
-tags=layer, preset, settings, options, theme, select, 
+tags=layer, preset, settings, options, theme, select
 homepage=https://github.com/mach0/themeselector
 tracker=https://github.com/mach0/themeselector/issues
 repository=https://github.com/mach0/themeselector

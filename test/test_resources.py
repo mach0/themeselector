@@ -1,43 +1,31 @@
-# coding=utf-8
-"""Resources test.
+"""Resources test."""
 
-.. note:: This program is free software; you can redistribute it and/or modify
-     it under the terms of the GNU General Public License as published by
-     the Free Software Foundation; either version 2 of the License, or
-     (at your option) any later version.
-
-"""
-
-__author__ = 'werner.macho@gmail.com'
-__date__ = '2017-07-13'
-__copyright__ = 'Copyright 2017, Werner Macho'
-
+import os
 import unittest
 
-from PyQt.QtGui import QIcon
+
+class ResourcesTest(unittest.TestCase):
+    """Test icon resources exist."""
+
+    def test_icons_exist(self):
+        img_dir = os.path.abspath(
+            os.path.join(
+                os.path.dirname(__file__), os.pardir, 'themeselector', 'img'
+            )
+        )
+        required_icons = [
+            'selector.png',
+            'selector.svg',
+            'mActionArrowLeft.svg',
+            'mActionArrowRight.svg',
+        ]
+        for icon in required_icons:
+            icon_path = os.path.join(img_dir, icon)
+            self.assertTrue(
+                os.path.exists(icon_path),
+                f"Missing icon {icon_path}"
+            )
 
 
-class SelectorDialogTest(unittest.TestCase):
-    """Test resources work."""
-
-    def setUp(self):
-        """Runs before each test."""
-        pass
-
-    def tearDown(self):
-        """Runs after each test."""
-        pass
-
-    def test_icon_png(self):
-        """Test we can click OK."""
-        path = ':/plugins/themeselector/img/selector.png'
-        icon = QIcon(path)
-        self.assertFalse(icon.isNull())
-
-if __name__ == "__main__":
-    suite = unittest.makeSuite(SelectorResourcesTest)
-    runner = unittest.TextTestRunner(verbosity=2)
-    runner.run(suite)
-
-
-
+if __name__ == '__main__':
+    unittest.main()

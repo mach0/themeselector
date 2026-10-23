@@ -1,0 +1,17 @@
+{
+    "include": [
+        "themeselector"
+    ],
+    "exclude": [
+        "**/__pycache__"
+    ],
+    "extraPaths": [
+        "/home/macho/projects/qgis/build/output/python",
+        "/home/macho/projects/qgis/build/output/python/plugins",
+        "/usr/local/lib/python3.13/dist-packages",
+        "/usr/lib/python3/dist-packages",
+        "./themeselector"
+    ],
+    "typeCheckingMode": "basic",
+    "reportMissingImports": "warning"
+}

@@ -4,7 +4,7 @@
   <context>
     <name>Selector</name>
     <message>
-      <location filename="../selector.py" line="93" />
+      <location filename="../selector.py" line="100" />
       <source>Theme&amp;Selector</source>
       <translation>Themenau&amp;swahl</translation>
     </message>
@@ -96,6 +96,29 @@
       <location filename="../selector_dockwidget_base.ui" line="0" />
       <source>Add</source>
       <translation>Hinzufügen</translation>
+    </message>
+  </context>
+  <context>
+    <name>ThemeOperationsMixin</name>
+    <message>
+      <location filename="../theme_operations.py" line="58" />
+      <source>Add Theme</source>
+      <translation>Thema hinzufügen</translation>
+    </message>
+    <message>
+      <location filename="../theme_operations.py" line="59" />
+      <source>Rename Theme</source>
+      <translation>Thema umbenennen</translation>
+    </message>
+    <message>
+      <location filename="../theme_operations.py" line="60" />
+      <source>Duplicate Theme</source>
+      <translation>Thema duplizieren</translation>
+    </message>
+    <message>
+      <location filename="../theme_operations.py" line="62" />
+      <source>Theme</source>
+      <translation>Thema</translation>
     </message>
   </context>
 </TS>
