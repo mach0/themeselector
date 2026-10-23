@@ -23,8 +23,10 @@ class SafeTranslationsTest(unittest.TestCase):
                 os.path.dirname(__file__), os.pardir, 'themeselector', 'i18n'
             )
         )
-        de_qm = os.path.join(i18n_dir, 'de.qm')
-        self.assertTrue(os.path.exists(de_qm), f"Missing {de_qm}")
+        for locale in ('de', 'en'):
+            qm_path = os.path.join(i18n_dir, f'{locale}.qm')
+            self.assertTrue(os.path.exists(qm_path), f"Missing {qm_path}")
+            self.assertGreater(os.path.getsize(qm_path), 100)
 
 
 if __name__ == '__main__':
